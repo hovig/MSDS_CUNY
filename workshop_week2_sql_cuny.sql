@@ -20,7 +20,7 @@ DROP TABLE IF EXISTS reviewers;
 -- #		other publicly available resources.
 
 CREATE TABLE videos (
-	ID int AUTO_INCREMENT PRIMARY KEY,
+    ID int AUTO_INCREMENT PRIMARY KEY,
     title varchar(100) NOT NULL,
     length float NOT NULL,
     url varchar(255) NOT NULL
@@ -38,9 +38,9 @@ INSERT INTO videos (title,length,url) VALUES
 -- #		(“Loved it!”). There should be a column that links back to the ID column in the table of videos.
 
 CREATE TABLE reviewers (
-	reviewer_id int AUTO_INCREMENT PRIMARY KEY,
+    reviewer_id int AUTO_INCREMENT PRIMARY KEY,
     video_id int NOT NULL REFERENCES videos,
-	reviewer varchar(100) NOT NULL,
+    reviewer varchar(100) NOT NULL,
     rating integer,
     review varchar(255)
 );
@@ -48,7 +48,9 @@ CREATE TABLE reviewers (
 INSERT INTO reviewers (video_id, reviewer, rating, review) VALUES
 (3,"Raffi Y.",4,"Great job!"),
 (1,"Daron",5,"Loved it!"),
-(2,"Ani Z.",4,"Great work!");
+(2,"Ani Z.",4,"Great work!"),
+(1,"Daniel",3,"Good!"),
+(3,"Tiffany",4,"Great stuff!");
 
 
 -- # 3. Report on Video Reviews. Write a JOIN statement that shows information from both tables.
