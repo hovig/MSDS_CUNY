@@ -1,0 +1,32 @@
+---
+title: "Mushroom Data Set - data607"
+author: "Ohannes (Hovig) Ohannessian"
+date: "1/31/2018"
+output: html_document
+---
+
+```{r}
+library(dplyr)
+df<-read.csv(url('https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data'))
+head(df)
+```
+
+```{r}
+names(df)<- c("class","cap-shape","cap-surface","cap-color","bruise","odor","gill-attachment","gill-spacing","gill-size","gill-color","stalk-shape","stalk-root","stalk-surface-above-ring","stalk-surface-below-ring","stalk-color-above-ring","stalk-color-below-ring","veil-type","veil-color","ring-number","ring-type","spore-print-color","population","habitat")
+head(df)
+```
+
+```{r}
+print(paste("The number of columns is equal to ", ncol(df)))
+print(paste("The number of rows is equal to ", nrow(df)))
+```
+
+```{r}
+df1<-select(df,c(1,2,4,22,23))
+levels(df1$class)<-c("edible","poisonous")
+levels(df1$`cap-shape`)<-c("bell","conical","flat","knobbed","sunken","convex")
+levels(df1$`cap-color`)<-c("brown","buff","cinnamon","gray","green", "pink","purple","red","white","yellow")
+levels(df1$population)<-c("abundant","clustered","numerous","scattered","several","solitary")
+levels(df1$habitat)<-c("woods","grasses","leaves","meadows","paths","urban","waste")
+head(df1)
+```
