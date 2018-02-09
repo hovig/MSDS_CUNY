@@ -1,0 +1,102 @@
+---
+title: "HW2 - SQL + R - Data607"
+author: "Ohannes (Hovig) Ohannessian"
+date: "2/8/2018"
+output: 
+  html_document: default
+  pdf_document: default
+---
+
+```{r echo = FALSE, message = FALSE}
+library(sqldf)
+library(RMySQL)
+library(DBI)
+library(ggplot2)
+```
+
+
+
+
+#### **_<u>Assignment Question</u>_:**
+
+
+**Choose six recent popular movies.  Ask at least five people that you know (friends, family, classmates, imaginary friends) to rate each of these movie that they have seen on a scale of 1 to 5. Take the results (observations) and store them in a SQL database. Load the information into an R dataframe.**
+
+
+# Movie Ratings
+
+```{r echo = FALSE}
+db <- dbConnect(MySQL(), user='root', host='localhost', dbname='movies')
+print(paste("The 2 tables in movies MySQL database (",dbListTables(db)[1],"and",dbListTables(db)[2],") are inner joined and sorted in descending order by the rating value column."))
+```
+
+## Chosen Movie List 
+
+```{r, echo = FALSE}
+library(knitr)
+```
+
+
+### <u>Table</u>
+
+```{r echo = FALSE, results = 'asis'}
+query<-"select m.movie_id, movie_title, rating_value, rating_owner from movies as m inner join ratings where m.movie_id = ratings.movie_id order by rating_value desc;"
+kable(fetch(dbSendQuery(db,query)))
+```
+
+### <u>Analysis</u>
+
+##### **_Summarise the db table_**
+```{r echo = FALSE, results = 'asis'}
+df <- fetch(dbSendQuery(db,query))
+kable(summary(df))
+```
+
+##### **_Split duplicates with their ratings_**
+```{r echo = FALSE}
+val<-c(split(df$rating_value, duplicated(df$movie_title) | duplicated(df$movie_title, fromLast = FALSE)),split(df$movie_title, duplicated(df$movie_title) | duplicated(df$movie_title, fromLast = FALSE)))
+val1<-as.double(unlist(val[1][1]))
+val2<-as.double(unlist(val[2][1]))
+val3<-unlist(val[3][1])
+val4<-unlist(val[4][1])
+dfval<-data.frame(val1,val3,val2,val4)
+Rating_1of2<-dfval$val1
+Movies_1of2<-dfval$val3
+Rating_2of2<-dfval$val2
+Movies_2of2<-dfval$val4
+dfval<-data.frame(Rating_1of2,Movies_1of2,Rating_2of2,Movies_2of2)
+kable(dfval)
+```
+
+##### **_Add ratings of duplicates to list high and low rated movies_**
+```{r echo = FALSE}
+vec<-c()
+for(i in 1:length(val1)) {
+  vec[i]<-sum(val1[i]+val2[i])
+}
+
+score<-c()
+for(j in 1:length(vec)){
+  if(vec[j]==max(vec)){
+    Highest_Score<-vec[j]
+  }
+  if(vec[j]==min(vec)){
+    Lowest_Score<-vec[j]
+  }
+}
+
+dfscore<-data.frame(movies=c(highest_score=val3[match(c(Highest_Score),vec)],lowest_score=val3[match(c(Lowest_Score),vec)]))
+Highest_rated_movie<-dfscore$movies[1]
+Lowest_rated_movie<-dfscore$movies[2]
+kable(data.frame(Highest_rated_movie,Lowest_rated_movie))
+```
+
+### <u>Plot the db table</u>
+
+```{r echo = FALSE, results = 'asis'}
+Movies<-df$movie_title
+Ratings<-df$rating_value
+Raters<-df$rating_owner
+ggplot(df, aes(x=Movies, y=Ratings)) + geom_point(shape=1) + geom_smooth(method=lm , color="red", se=TRUE)
+```
+
