@@ -9,19 +9,19 @@ drop table if exists movies;
 drop table if exists ratings;
 
 create table movies (
-	movie_id int auto_increment primary key,
+    movie_id int auto_increment primary key,
     movie_title varchar(50) not null
 );
 
 create table ratings (
-	rating_id int auto_increment primary key,
+    rating_id int auto_increment primary key,
     movie_id int not null references movies,
     rating_value float not null,
     rating_owner varchar(25) not null
 );
 
 insert into movies (movie_title) values 
-	("Wormwood"),
+    ("Wormwood"),
     ("Lady Macbeth"),
     ("Dunkirk"),
     ("Marjorie Prime"),
@@ -30,7 +30,7 @@ insert into movies (movie_title) values
 ;
 
 insert into ratings (movie_id, rating_value, rating_owner) values
-	(1, 3.5, "John"),
+    (1, 3.5, "John"),
     (2, 2.0, "Caroline"),
     (3, 5.0, "Hovig"),
     (4, 3.0, "Ghazo"),
