@@ -2,6 +2,8 @@
 -- Assignment 2 - DATA 607
 -- Feb 02, 2018
 
+-- on the 1st run of this script, un-comment 
+-- the following line to create the database 
 #create database movies;
 use movies;
 
