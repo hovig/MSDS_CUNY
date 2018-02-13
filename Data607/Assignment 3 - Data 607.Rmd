@@ -1,0 +1,132 @@
+---
+title: "Assignment 3 - Data 607"
+author: "Ohannes (Hovig) Ohannessian"
+date: "2/12/2018"
+output:
+  html_document
+---
+
+### Question 3
+
+```{r}
+library(stringr)
+library(knitr)
+
+raw.data <-"555-1239Moe Szyslak(636) 555-0113Burns, C. Montgomery555-6542Rev. Timothy Lovejoy555 8904Ned Flanders636-555-3226Simpson, Homer5553642Dr. Julius Hibbert"
+
+name<-unlist(str_extract_all(raw.data, "[[:alpha:]., ]{2,}"))
+phone<-unlist(str_extract_all(raw.data, "\\(?(\\d{3})?\\)?(-| )?\\d{3}(-| )?\\d{4}"))
+
+name
+```
+
+#### 3.1) 
+```{r}
+kable(data.frame(name,phone))
+```
+
+* **first_name last_name format:**
+```{r}
+for(i in 1:length(name)) {
+  if(str_detect(name[i],",")==TRUE) {
+    temp<-unlist(str_split(name[i],","))
+    name[i]<-paste(temp[2], temp[1], sep=" ")
+  }
+}
+kable(data.frame(name))
+```
+
+#### 3.2)
+```{r}
+with_title<-str_detect(name, "Rev.|Dr.")
+title<-c()
+for(j in 1:length(with_title)) {
+  if(with_title[j]==FALSE){
+    title[j]<-'NA'
+  } else if(str_detect(name[j], "Rev.")=='TRUE') {
+    title[j]<-"Rev."
+  } else {
+    title[j]<-"Dr."
+  }
+}
+kable(data.frame(name, with_title, title))
+```
+
+#### 3.3)
+```{r}
+middle_name<-str_count(unlist(str_extract_all(name, "[^Dr\\. |Rev\\. ].+")), " ")
+middle_name<-ifelse(middle_name==2, "yes", "no")
+kable(data.frame(name, middle_name))
+```
+
+
+
+### Question 4
+
+```{r}
+v<-c("abc$123", "$123", "123$", "1$23", "data*", "tournamentinfo.txt", "science", "MSDS", "CUNY", "Texas", "Austin.", "<title> Data Science </title>", "txt.tournamentinfo", "04/24/1915", "12/12/12", "<table> List of dates <table>")
+```
+
+#### 4.1) 
+
+**`[0-9]+\\$, string of digit(s) followed by a dollar sign`**
+```{r}
+unlist(str_extract_all(v, "[0-9]+\\$"))
+```
+
+#### 4.2) 
+
+**`\\b[a-z]{1,4}\\b, string of lower case letters that ranges between 1 to 4 letters`**
+```{r}
+unlist(str_extract_all(v, "\\b[a-z]{1,4}\\b"))
+```
+
+#### 4.3) 
+
+**`.*?\\.txt$, string with any character(s) or number(s) that ends with .txt`**
+```{r}
+unlist(str_extract_all(v, ".*?\\.txt$"))
+```
+
+#### 4.4) 
+
+**`\\d{2}/\\d{2}/\\d{4}, string that contains 2 digits with a slash then 2 digits and a slash and followed by 4 digits`**
+**`(e.g. numeric birthdate)`**
+```{r}
+unlist(str_extract_all(v, "\\d{2}/\\d{2}/\\d{4}"))
+```
+
+#### 4.5) 
+
+**`<(.+?)>.+?</\\1>, string that has an opening and closing brackets at the beginning, then can take any string in the`**
+**`middle, then opening and closing brackets with a forward slash (e.g. html coding): <values> anything </values>`**
+```{r}
+unlist(str_extract_all(v, "<(.+?)>.+?</\\1>"))
+```
+
+
+
+#### Question 9
+
+```{r}
+hidden<-"clcopCow1zmstc0d87wnkig7OvdicpNuggvhryn92Gjuwczi8hqrfpRxs5Aj5dwpn0TanwoUwisdij7Lj8kpf03AT5Idr3coc0bt7yczjatOaootj55t3Nj3ne6c4Sfek.r1w1YwwojigOd6vrfUrbz2.2bkAnbhzgv4R9i05zEcrop.wAgnb.SqoU65fPa1otfb7wEm24k6t3sR9zqe5fy89n6Nd5t9kc4fE905gmc4Rgxo5nhDk!gr"
+
+uppercase<-paste(unlist(str_extract_all(hidden, "[[A-Z].?]")), collapse="")
+lowercase<-paste(unlist(str_extract_all(hidden, "[[a-z].?]")), collapse="")
+numbers<-paste(unlist(str_extract_all(hidden, "[[0-9].?]")), collapse="")
+
+uppercase
+lowercase
+numbers
+```
+
+* **The meaningful sentence is the following:**
+```{r}
+uppercase<-str_replace_all(uppercase, "[.]", " ")
+kable(data.frame(uppercase))
+```
+
+
+
+
+
