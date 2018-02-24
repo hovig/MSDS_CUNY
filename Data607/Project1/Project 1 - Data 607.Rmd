@@ -1,0 +1,105 @@
+---
+title: "Project 1 - Data 607"
+author: "Ohannes (Hovig) Ohannessian"
+date: "2/19/2018"
+output: html_document
+---
+<div class='alert alert-info'>
+In this project, you’re given a text file with chess tournament results where the information has some structure. 
+Your job is to create an R Markdown file that generates a .CSV file (that could for example be imported into a SQL
+database) with the following information for all of the players:`
+
+Player’s Name, Player’s State, Total Number of Points, Player’s Pre-Rating, and Average Pre Chess Rating of Opponents
+For the first player, the information would be:`
+
+Gary Hua, ON, 6.0, 1794, 1605`
+
+1605 was calculated by using the pre-tournament opponents’ ratings of 1436, 1563, 1600, 1610, 1649, 1663, 1716, and 
+dividing by the total number of games played.
+</div>
+* * *
+
+```{r echo=FALSE, message=FALSE}
+library(knitr)
+library(stringr)
+library(dplyr)
+library(DT)
+library(RCurl)
+library(bitops)
+library(ggplot2)
+```
+
+```{r eval=TRUE}
+file.content <- readLines("https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/Data607/Project1/tournamentinfo.txt", warn = FALSE)
+```
+
+```{r echo=FALSE}
+size<-getURL("https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/Data607/Project1/tournamentinfo.txt", nobody=1L, header=1L)
+s<-unlist(strsplit(size, "\r\n"))
+df<-data.frame(Size=c(File=paste(str_extract(s[12],"[[:digit:]]+\\w" ),"Bytes")), Length=c(File=paste(length(file.content),"Rows")))
+#names(df)<-c("file")
+kable(df)
+```
+
+```{r echo=FALSE}
+# Remove dashes and empty lines
+remove.dashes<-gsub("-", "", file.content)
+remove.empty_lines<-seq(1, length(remove.dashes), by=3)
+remove.lines<-remove.dashes[5:length(remove.dashes)]
+file.formatted<-remove.lines[sapply(remove.lines, nchar)>0]
+
+# Store the 2 parts of each record and remove unnecessary regex characters
+record.part1<-seq(1, length(file.formatted), by=2)
+record.part2<-seq(2, length(file.formatted), by=2)
+formatted.record1<-gsub("\\|","",file.formatted[record.part1])
+formatted.record2<-gsub("[|/>:]","",file.formatted[record.part2])
+```
+
+```{r echo=FALSE}
+# Extract names
+extract.digit_from_record1<-gsub("[[:digit:]]", "", formatted.record1)
+extract.name<-str_trim((str_sub(extract.digit_from_record1, start = 1, end = 35)))
+
+# Extract points
+extract.characters_from_record1<-gsub("[[:alpha:]]", "", formatted.record1)
+extract.points<-str_extract(extract.characters_from_record1,"[0-9]\\.[0-9]")
+
+o<-file.formatted[record.part1]
+p<-gsub("\\|","",gsub("[[:alpha:]]", "", str_sub(o, start = 51)))
+
+# Extract state
+extract.digit_from_record2<-gsub("[[:digit:]]", "", formatted.record2)
+extract.state<-str_sub(extract.digit_from_record2, start = 3, end = 5)
+
+# Extract pre-rating
+extract.characters_from_record2<-gsub("[[:alpha:]]", "", formatted.record2)
+extract.prerating<-str_sub(extract.characters_from_record2, start = 17, end = 20)
+
+# Calculate the average pre chess rating of opponents
+average_pre_chess_rating_of_opponents<-c()
+rounds<-c()
+for (i in 1:length(p)) {
+  rounds<-as.integer(unlist(str_extract_all(p[i], "[[:digit:]]+")))
+  average_pre_chess_rating_of_opponents[i] <- as.integer(sum(as.integer(unlist(extract.prerating[rounds])))/length(rounds))
+}
+```
+
+```{r echo=FALSE}
+# Display results
+df<-data.frame(Name=extract.name, State=extract.state, Points=extract.points, Prerating=extract.prerating, Opponent_Avg_Rating=average_pre_chess_rating_of_opponents, stringsAsFactors = FALSE)
+datatable(df, extensions = 'Scroller', options = list(deferRender = TRUE, scrollY = 200, scroller = TRUE))
+```
+```{r echo=FALSE}
+plot(as.numeric(df$Prerating)~as.numeric(df$Opponent_Avg_Rating), xlab="Prerating", ylab="Opponent_Avg_Rating", xlim=c(800,1800), ylim=c(1100,1800), col="blue")
+title(main="Chess Ratings", col.main="red", font.main=1)
+```
+
+<br><div class='alert alert-info'><b>Write into a csv file:</b></div>
+```{r}
+# Option 1: file saved to local path when running rmd file
+write.table(df, file = "Project 1 - Data 607.csv", sep = ",", col.names = T, row.names = F, quote = FALSE)
+
+# Option 2: copy and paste below into a csv file
+write.csv(df, row.names = F, quote = FALSE)
+```
+<div class='alert alert-info'><b>A copy of this csv file is available at <a href="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/Data607/Project1/Project%201%20-%20Data%20607.csv" target="_blank">github</a>.</b></div>
