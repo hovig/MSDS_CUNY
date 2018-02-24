@@ -7,12 +7,12 @@ output: html_document
 <div class='alert alert-info'>
 In this project, you’re given a text file with chess tournament results where the information has some structure. 
 Your job is to create an R Markdown file that generates a .CSV file (that could for example be imported into a SQL
-database) with the following information for all of the players:`
+database) with the following information for all of the players:
 
 Player’s Name, Player’s State, Total Number of Points, Player’s Pre-Rating, and Average Pre Chess Rating of Opponents
-For the first player, the information would be:`
+For the first player, the information would be:
 
-Gary Hua, ON, 6.0, 1794, 1605`
+Gary Hua, ON, 6.0, 1794, 1605
 
 1605 was calculated by using the pre-tournament opponents’ ratings of 1436, 1563, 1600, 1610, 1649, 1663, 1716, and 
 dividing by the total number of games played.
