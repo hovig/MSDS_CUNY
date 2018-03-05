@@ -1,0 +1,232 @@
+---
+title: "Assignment 5 - Data 607"
+author: "Ohannes (Hovig) Ohannessian"
+date: "3/3/2018"
+output: html_document
+---
+```{r echo=FALSE}
+library(knitr)
+library(tidyr)
+library(DT)
+library(readr)
+library(ggplot2)
+```
+
+<div class='alert alert-success'>
+<img src="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/Data607/hw5/hw5-data607.png" alt="csv" height="300" width="400">
+
+The chart above describes arrival delays for two airlines across five destinations. Your task is to:
+
+(1) Create a .CSV file (or optionally, a MySQL database!) that includes all of the information above.
+You’re encouraged to use a “wide” structure similar to how the information appears above, so
+that you can practice tidying and transformations as described below.
+
+(2) Read the information from your .CSV file into R, and use tidyr and dplyr as needed to tidy
+and transform your data.
+
+(3) Perform analysis to compare the arrival delays for the two airlines.
+
+(4) Your code should be in an R Markdown file, posted to rpubs.com, and should include narrative
+descriptions of your data cleanup work, analysis, and conclusions. Please include in your
+homework submission:
+
+- The URL to the .Rmd file in your GitHub repository. and
+- The URL for your rpubs.com web page.
+</div>
+
+1.
+<style>
+.dataTables_wrapper .dataTables_filter {
+float: right;
+text-align: right;
+visibility: hidden;
+}
+.dataTables_wrapper .dataTables_length {
+float: left;
+visibility: hidden;
+}
+.dataTables_wrapper .dataTables_paging {
+float: left;
+visibility: hidden;
+}
+</style>
+
+<div class="alert alert-warning"><b>Table created in "Assignment 5-Data 607.csv" file</b></div>
+
+```{r echo=FALSE, message='asis'}
+library(dplyr)
+
+# export the given contents into a matrix
+file.content <- matrix(c(c(497,221,212,503,1841), c(62,12,20,102,305), c(694,4840,383,320,201), c(117,415,65,129,61)),ncol=5,byrow=TRUE)
+colnames(file.content)<- c('Los Angeles','Phoenix','San Diego','San Francisco','Seattle')
+
+# manage the data table to have all rows and columns
+file.content<-data.frame(file.content)
+i<-nrow(file.content)
+df1<-file.content[c(1:(i-2),(i+1),(i-1):i),]
+df1<-data.frame(" "=c("on time","delayed","","on time","delayed"),df1)
+df1<-data.frame(" "=c("ALASKA","","","AM WEST",""),df1)
+names(df1)[1:2] <-c(" "," ")
+row.names(df1)<-NULL
+
+# display table 
+datatable(df1, escape=FALSE, rownames = FALSE)
+
+# write table into a csv file
+write.table(df1, file = "Assignment 5-Data 607.csv", sep = ",", col.names = T, row.names = F, quote = FALSE)
+```
+
+
+2.
+
+<div class="alert alert-warning"><b>Imported table from "Assignment 5-Data 607.csv" file</b></div>
+
+```{r echo=FALSE}
+# read the locally stored csv file from before
+csv.file<-read.csv("Assignment 5-Data 607.csv", stringsAsFactors=FALSE)
+names(csv.file)[1:2] <-c(" "," ")
+row.names(csv.file)<-NULL
+names(csv.file)[1:2]<-c("Airline", "Status")
+
+# display table with complete column names
+datatable(csv.file, escape=FALSE, rownames = FALSE)
+```
+
+
+```{r}
+# short view of the table contents
+glimpse(csv.file)
+```
+
+<div class="alert alert-warning">Analytics: by rows and by columns</div>
+
+```{r echo=FALSE}
+# extract NA
+csv.file<-na.omit(csv.file) 
+row.names(csv.file)<-NULL
+r<-1;j<-3
+
+# total (on time + delayed) combined for each destination
+df3<-rbind(csv.file,c("TotalPerCity "," ->",c(colSums(csv.file[j]),colSums(csv.file[j+1]),colSums(csv.file[j+2])),colSums(csv.file[j+3]),colSums(csv.file[j+4])))
+
+# Total Per Airline Status for each airline
+df4<-data.frame(as.list(df3[3:7]))
+df4.row1<-sum(as.numeric(as.character(df4$Los.Angeles[r])),as.numeric(as.character(df4$Phoenix[r])),as.numeric(as.character(df4$San.Diego[r])),as.numeric(as.character(df4$San.Francisco[r])),as.numeric(as.character(df4$Seattle[r])))
+df4.row2<-sum(as.numeric(as.character(df4$Los.Angeles[r+1])),as.numeric(as.character(df4$Phoenix[r+1])),as.numeric(as.character(df4$San.Diego[r+1])),as.numeric(as.character(df4$San.Francisco[r+1])),as.numeric(as.character(df4$Seattle[r+1])))
+df4.row3<-sum(as.numeric(as.character(df4$Los.Angeles[r+2])),as.numeric(as.character(df4$Phoenix[r+2])),as.numeric(as.character(df4$San.Diego[r+2])),as.numeric(as.character(df4$San.Francisco[r+2])),as.numeric(as.character(df4$Seattle[r+2])))
+df4.row4<-sum(as.numeric(as.character(df4$Los.Angeles[r+3])),as.numeric(as.character(df4$Phoenix[r+3])),as.numeric(as.character(df4$San.Diego[r+3])),as.numeric(as.character(df4$San.Francisco[r+3])),as.numeric(as.character(df4$Seattle[r+3])))
+row.names(df3)<-NULL
+df3<-cbind(df3,TotalPerAirlineStatus=c(df4.row1,df4.row2,df4.row3,df4.row4," "))
+i<-nrow(df3)
+df3<-df3[c(1:(i-3),(i+1),(i-2):i),]
+
+# Total On Time Per Destination from both airlines
+df3.ontime1<-sum(as.numeric(as.character(df4$Los.Angeles[r])),as.numeric(as.character(df4$Los.Angeles[r+2])))
+df3.ontime2<-sum(as.numeric(as.character(df4$Phoenix[r])),as.numeric(as.character(df4$Phoenix[r+2])))
+df3.ontime3<-sum(as.numeric(as.character(df4$San.Diego[r])),as.numeric(as.character(df4$San.Diego[r+2])))
+df3.ontime4<-sum(as.numeric(as.character(df4$San.Francisco[r])),as.numeric(as.character(df4$San.Francisco[r+2])))
+df3.ontime5<-sum(as.numeric(as.character(df4$Seattle[r])),as.numeric(as.character(df4$Seattle[r+2])))
+df3<-rbind(df3,c("TotalOnTimePerCity","-> ",c(df3.ontime1,df3.ontime2,df3.ontime3,df3.ontime4,df3.ontime5," ")))
+TotalOnTimePerCity<-c(df3.ontime1,df3.ontime2,df3.ontime3,df3.ontime4,df3.ontime5)
+max.TotalOnTimePerCity<-max(c(df3.ontime1,df3.ontime2,df3.ontime3,df3.ontime4,df3.ontime5))
+
+# Total Delay Per Destination from both airlines
+df3.delayed1<-sum(as.numeric(as.character(df4$Los.Angeles[r+1])),as.numeric(as.character(df4$Los.Angeles[r+3])))
+df3.delayed2<-sum(as.numeric(as.character(df4$Phoenix[r+1])),as.numeric(as.character(df4$Phoenix[r+3])))
+df3.delayed3<-sum(as.numeric(as.character(df4$San.Diego[r+1])),as.numeric(as.character(df4$San.Diego[r+3])))
+df3.delayed4<-sum(as.numeric(as.character(df4$San.Francisco[r+1])),as.numeric(as.character(df4$San.Francisco[r+3])))
+df3.delayed5<-sum(as.numeric(as.character(df4$Seattle[r+1])),as.numeric(as.character(df4$Seattle[r+3])))
+df3<-rbind(df3,c("TotalDelayPerCity","-> ",c(df3.delayed1,df3.delayed2,df3.delayed3,df3.delayed4,df3.delayed5," ")))
+max.TotalDelayPerCity<-max(c(df3.delayed1,df3.delayed2,df3.delayed3,df3.delayed4,df3.delayed5))
+
+# On Time Rate Per Destination
+df3.OnTimeRatePerCity<-rbind(df3,c("OnTimeRatePerCity","-> ",c(round(df3.ontime1/(df4.row1+df4.row3),3),round(df3.ontime2/(df4.row1+df4.row3),3),round(df3.ontime3/(df4.row1+df4.row3),3),round(df3.ontime4/(df4.row1+df4.row3),3),round(df3.ontime5/(df4.row1+df4.row3),3)," ")))
+df3<-df3.OnTimeRatePerCity
+
+# Delay Rate Per Destination
+df3<-rbind(df3,c("DelayRatePerCity","-> ",c(round(df3.delayed1/(df4.row2+df4.row4),3),round(df3.delayed2/(df4.row2+df4.row4),3),round(df3.delayed3/(df4.row2+df4.row4),3),round(df3.delayed4/(df4.row2+df4.row4),3),round(df3.delayed5/(df4.row2+df4.row4),3)," ")))
+
+df3.DelayRatePerCity<-rbind(df3,c("DelayRatePerCity","-> ",c(round(df3.delayed1/(df4.row2+df4.row4),3),round(df3.delayed2/(df4.row2+df4.row4),3),round(df3.delayed3/(df4.row2+df4.row4),3),round(df3.delayed4/(df4.row2+df4.row4),3),round(df3.delayed5/(df4.row2+df4.row4),3)," ")))
+df3<-df3.DelayRatePerCity
+
+# display table 
+datatable(df3, escape=FALSE, rownames = FALSE)
+```
+
+```{r}
+# draw a graph with all 5 destination cities 
+la<-as.numeric(as.character(df4$Los.Angeles))
+ph<-as.numeric(as.character(df4$Phoenix))
+sd<-as.numeric(as.character(df4$San.Diego))
+sf<-as.numeric(as.character(df4$San.Francisco))
+se<-as.numeric(as.character(df4$Seattle))
+ggplot(df4, aes(x = la)) + 
+  geom_line(aes(y = la), colour="blue") +     # Los Angeles
+  geom_line(aes(y = ph), colour ="grey") +    # Phoenix
+  geom_line(aes(y = sd), colour="red") +      # San Diego
+  geom_line(aes(y = sf), colour ="green") +   # San Francisco
+  geom_line(aes(y = se), colour="yellow") +   # Seattle
+  ylab(label="Arrival Time") + 
+  xlab("Destination") +
+  scale_colour_manual(name="Destination", values=c("blue", "grey", "red", "green", "yellow")) 
+```
+
+3.
+
+<div class="alert alert-warning"><u>More Analytics</u></div>
+
+```{r}
+# short view of the new table
+glimpse(df3)
+```
+
+<div class="alert alert-warning"><b>Conclusion Summary</b></div>
+
+```{r}
+# comparison of the 2 airlines and best city rate
+df3.OnTimeRatePerCity<-c(round(df3.ontime1/(df4.row1+df4.row3),3),round(df3.ontime2/(df4.row1+df4.row3),3),round(df3.ontime3/(df4.row1+df4.row3),3),round(df3.ontime4/(df4.row1+df4.row3),3),round(df3.ontime5/(df4.row1+df4.row3),3))
+df3.DelayRatePerCity<-c(round(df3.delayed1/(df4.row2+df4.row4),3),round(df3.delayed2/(df4.row2+df4.row4),3),round(df3.delayed3/(df4.row2+df4.row4),3),round(df3.delayed4/(df4.row2+df4.row4),3),round(df3.delayed5/(df4.row2+df4.row4),3))
+
+# display table 
+kable(data.frame("Best On Time Airline"=c(df3$Airline[which(df3$TotalPerAirlineStatus==max(na.omit(as.numeric(as.character(df3$TotalPerAirlineStatus)))))]),"Most Delayed Airline"=c(df3$Airline[which(df3$TotalPerAirlineStatus==min(na.omit(as.numeric(as.character(df3$TotalPerAirlineStatus)))))-1]),"Best Ontime Rate City"=c(paste("Phoenix, rate =",max(df3.OnTimeRatePerCity))),"AM WEST"=c(paste("on time=",round(6438/7225,4)*100,"%,delay=",round(787/7225,4)*100,"%")),"ALASKA"=c(paste("on time=",round(3274/3775,4)*100,"%,delay=",round(501/3775,4)*100,"%"))))
+```
+
+
+```{r}
+# comparison of the 2 airlines and best city rate
+df3.OnTimeRatePerCity<-c(round(df3.ontime1/(df4.row1+df4.row3),3),round(df3.ontime2/(df4.row1+df4.row3),3),round(df3.ontime3/(df4.row1+df4.row3),3),round(df3.ontime4/(df4.row1+df4.row3),3),round(df3.ontime5/(df4.row1+df4.row3),3))
+df3.DelayRatePerCity<-c(round(df3.delayed1/(df4.row2+df4.row4),3),round(df3.delayed2/(df4.row2+df4.row4),3),round(df3.delayed3/(df4.row2+df4.row4),3),round(df3.delayed4/(df4.row2+df4.row4),3),round(df3.delayed5/(df4.row2+df4.row4),3))
+
+# display table 
+kable(data.frame("Best Ontime Airline"=c(df3$Airline[which(df3$TotalPerAirlineStatus==max(na.omit(as.numeric(as.character(df3$TotalPerAirlineStatus)))))]),"Most Delayed Airline"=c(df3$Airline[which(df3$TotalPerAirlineStatus==min(na.omit(as.numeric(as.character(df3$TotalPerAirlineStatus)))))-1]),"Best Ontime Rate City"=c(paste("Phoenix, rate =",max(df3.OnTimeRatePerCity)))))
+```
+
+<div class="alert alert-warning">The following table is showing the city with best on time ranking as first:</div>
+```{r}
+# sort destinations with their respective total on time and on time rates
+df5<-data.frame(n=cbind(colnames(df3)[3:7],TotalOnTimePerCity),df3.OnTimeRatePerCity)
+df5<-df5[rev(order(TotalOnTimePerCity)),]
+row.names(df5)<-NULL
+names(df5)[1:3] <-c("Destination","TotalOnTimePerCity","OnTimeRatePerCity")
+
+# display table 
+datatable(df5)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
