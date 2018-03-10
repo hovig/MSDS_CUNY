@@ -1,0 +1,35 @@
+Company,IoT Platform,Edge Platform,SaaS Cloud,Any Cloud,On-Prem,Notes
+ClearBlade,ClearBlade IoT Platform,ClearBlade Edge,Google,Yes,Yes,
+Amazon,AWS IoT,AWS Greengrass,AWS,No,No,
+PTC,Thingworx,none,AWS,No,No,
+IBM,Watson IoT Platform,none,Bluemix,No,Yes,
+Microsoft,Azure IoT Suite,none,Azure,No,No,
+Ayla Networks,Ayla IoT Platform,none,AWS,No,No,
+Aeris,AerCloud,none,Traditional telecom,No,No,Cellular-based.
+Afero,Datonis,none,,,No,SIP (system in package) module based on Murata
+Amplia,Amplia OpenGate,none,Traditional telecom,,No,Cellular-based. Spain.
+AT&T,AT&T M2X IoT Platform,none,Traditional telecom,,No,Cellular-based.
+Bosch,Bosch IoT Suite,none,Bosch IoT Cloud,No,No,Germany
+C3 IoT,C3 IoT Platform,none,,,,Tom Seibel.
+Carriots,Carriots,none,Azure,No,No,Spain. Spin off of Wairbut
+Connio,Connio,none,Bluemix,,No,Cloudant DB
+Cumulocity,Cumulocity,none,AWS,,No,Germany
+Davra Networks,RuBAN,Edge Agents,Bluemix,No,No,Ireland. Per device pricing. Very expensive. Big data via Cloudera.
+DevicePilot,DevicePilot,none,,,,
+Electric Imp,Electric Imp Platform,none,,,,
+Ericsson,Ericsson Application Platform for IoT,none,,,,
+Exosite,Exosite Murano,none,,,,
+Gemalto,SensorLogic,none,,,,
+HPE,HPE Universal IoT Platform,none,,,,
+Kaa,Kaa IoT Platform,none,,,,
+MachineShop,MachineShop,none,AWS,,No,
+MODE,MODE,none,,,,
+Relayr,Relayr,none,,,,
+SAP,SAP HANA Cloud Platform for the IoT,none,,,,
+Scriptr.io,Scriptr,none,,,,
+SiteWhere,SiteWhere,none,,,,
+SoftwareAG,SoftwareAG IoT Foundation,none,AWS,,No,OEM partnership with Cumulocity
+Telit,Telit deviceWISE,none,,,,
+TheThings.iO,TheThings.iO,none,,,,
+Waylay,Waylay,none,,,,
+Yaler,Yaler,none,,,No,Switzerland-based
