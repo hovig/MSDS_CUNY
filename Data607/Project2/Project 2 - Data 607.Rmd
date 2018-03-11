@@ -1,0 +1,170 @@
+---
+title: "Project 2 - Data 607"
+author: "Ohannes (Hovig) Ohannessian"
+date: "3/6/2018"
+output: html_document
+---
+
+<div class="alert alert-success">
+The goal of this assignment is to give you practice in preparing different datasets for downstream 
+analysis work.
+
+Your task is to:
+<br>(1) Choose any three of the “wide” datasets identified in the Week 6 Discussion items.  (You may use your own dataset; please don’t use my Sample Post dataset, since that was used in your Week 6 assignment!)  For each of the three chosen datasets:
+
+- Create a .CSV file (or optionally, a MySQL database!) that includes all of the information included in the dataset.  You’re encouraged to use a “wide” structure similar to how the information appears in the discussion item, so that you can practice tidying and transformations as described below.
+- Read the information from your .CSV file into R, and use tidyr and dplyr as needed to tidy and transform your data.  [Most of your grade will be based on this step!]
+- Perform the analysis requested in the discussion item.
+- Your code should be in an R Markdown file, posted to rpubs.com, and should include narrative descriptions of your data cleanup work, analysis,and conclusions.
+
+<br>(2) Please include in your homework submission, for each of the three chosen datasets:
+
+- The URL to the .Rmd file in your GitHub repository, and 
+- The URL for your rpubs.com web page.
+</div>
+
+```{r echo=FALSE, include=FALSE}
+library(tidyr)
+library(dplyr)
+library(knitr)
+library(rworldmap)
+library(ggplot2)
+library(ggmap)
+library(plotly)
+```
+
+<div class="alert alert-warning">
+<u>List of datasets used respectively:</u>
+<br><b>- List of IoT Platforms</b>
+<br><b>- Ride Austin</b>
+<br><b>- City of Chicago - Locations of Array of Things sensor nodes</b></div>
+
+```{r}
+# List of IoT Platforms
+iot_platform_data<-read.csv("https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/Data607/Project2/IoT%20Platforms.csv")
+
+# Ride Austin
+ride_data_1<-read.csv("https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/Data607/Project2/merged_ride_weather_data_1.csv")
+ride_data_2<-read.csv("https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/Data607/Project2/merged_ride_weather_data_2.csv")
+
+# City of Chicago - Locations of Array of Things sensor nodes
+array_of_things_locations_data<-read.csv("https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/Data607/Project2/array-of-things-locations-1.csv")
+```
+
+<div class="alert alert-warning">
+<b><u>List of IoT Platforms</u></b><br>
+Listing an overview of the IoT platforms data and checking which company offers on-prem services.
+</div>
+
+```{r}
+glimpse(iot_platform_data)
+```
+
+```{r}
+iot_platform_data %>%
+  summarise(companies_total_count=n()) %>%
+  kable()
+```
+
+```{r}
+iot_platform_data %>%
+  filter(On.Prem == "Yes") %>%
+  kable()
+```
+
+<div class="alert alert-warning">
+<b><u>Ride Austin</u></b><br>
+Listing an overview of the Ride Austin (a transportation company based in Austin, TX) data and mapping riders starting locations.
+</div>
+
+```{r}
+ride_data<-rbind(ride_data_1,ride_data_2)
+riders_of_ride_data<-ride_data %>%
+                      group_by(rider_rating) %>%
+                      summarise(count=n())
+riders_fares_ride_data<-ride_data %>%
+                          gather(fares, n, base_fare:time_fare) %>%
+                          mutate(fares = gsub("fares","",fares)) %>%
+                          arrange(rider_id, rider_rating) %>%
+                          select(53,54,55)
+head(riders_fares_ride_data,10)
+```
+
+```{r}
+kable(riders_of_ride_data[with(riders_of_ride_data, order(-riders_of_ride_data$rider_rating)),])
+```
+
+```{r}
+refine_ride_data<-ride_data %>%
+                    group_by(end_location_long,end_location_lat) %>%
+                    summarize(count=n())
+```
+
+```{r}
+glimpse(refine_ride_data)
+```
+
+```{r echo=FALSE, include=FALSE}
+df<-round(data.frame(
+  x = jitter(ride_data$end_location_long, amount = .3),
+  y = jitter(ride_data$end_location_lat, amount = .3)), 
+  digits = 2)
+map<-get_googlemap('austin', markers = df, path = df, scale = 2)
+```
+
+```{r}
+ggmap(map, extent = 'device')
+```
+
+
+<div class="alert alert-warning">
+<b><u>City of Chicago - Locations of Array of Things sensor nodes</u></b><br>
+Listing an overview of projects and plans that some went live and some are still planned and locating sensors on the map.
+</div>
+
+```{r}
+glimpse(array_of_things_locations_data)
+```
+
+```{r}
+status_of_things<-array_of_things_locations_data %>% 
+                    group_by(Status) %>%
+                    summarise(count=n())
+kable(status_of_things)
+```
+
+```{r}
+dat <- data.frame(
+    status = factor(status_of_things$Status, levels=status_of_things$Status),
+    count = status_of_things$count
+)
+
+ggplot(data=dat, aes(x=status, y=count, fill=time)) + 
+    geom_bar(colour="black", fill="#DD8888", width=.8, stat="identity") + 
+    guides(fill=FALSE) +
+    xlab("Status type") + ylab("Status count per type") +
+    ggtitle("Chicago's planning status")
+```
+
+```{r echo=FALSE, include=FALSE}
+df<-round(data.frame(
+  x = jitter(array_of_things_locations_data$Longitude, amount = .3),
+  y = jitter(array_of_things_locations_data$Latitude, amount = .3)), 
+  digits = 2)
+map<-get_googlemap('chicago', markers = df, path = df, scale = 2)
+```
+
+```{r}
+ggmap(map, extent = 'device')
+```
+
+
+
+
+
+
+
+
+
+
+
