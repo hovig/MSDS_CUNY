@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<languagesBooks>
+  <book>
+    <title>Arabica</title>
+    <author>Ohannes Ohannessian</author>
+    <price>$7.99</price>
+    <publisher>CreateSpace Independent Publishing Platform</publisher>
+    <publishedDate>October 1, 2014</publishedDate>
+    <type>Paperback</type>
+    <isbn_13_asin>978-1502585455</isbn_13_asin>
+  </book>
+  <book>
+    <title>Hebrew Phrasebook & Dictionary</title>
+    <author>Justin Rudelson, Klara Ilana Wistinetzk</author>
+    <price>$8.97</price>
+    <publisher>Lonely Planet</publisher>
+    <publishedDate>March 15, 2013</publishedDate>
+    <type>Paperback</type>
+    <isbn_13_asin>978-1741791389</isbn_13_asin>
+  </book>
+  <book>
+    <title>Practical Textbook of Western Armenian (Self Teaching Armenian Language Method)</title>
+    <author>Haroutiun Kurkjian</author>
+    <price>$116.58</price>
+    <publisher>Armenian</publisher>
+    <publishedDate>2017</publishedDate>
+    <type>Paperback</type>
+    <isbn_13_asin>B003IGI1P4</isbn_13_asin>
+  </book>
+</languagesBooks>
