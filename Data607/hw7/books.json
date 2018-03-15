@@ -1,5 +1,4 @@
 {
-  "learning_books":[
     {
       "title": "Arabica",
       "author": "Ohannes Ohannessian",
@@ -27,5 +26,4 @@
       "type": "Paperback",
       "isbn_13_asin": "B003IGI1P4"
     }
-  ]
 }
