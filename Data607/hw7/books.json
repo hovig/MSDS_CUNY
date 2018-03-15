@@ -2,7 +2,7 @@
   "learning_books":[
     {
       "title": "Arabica",
-      "author": "Ohannes Ohannessian",
+      "authors": "Ohannes Ohannessian",
       "price": "$7.99",
       "publisher": "CreateSpace Independent Publishing Platform",
       "publishedDate": "October 1, 2014",
