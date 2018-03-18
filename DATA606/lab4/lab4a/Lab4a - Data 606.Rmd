@@ -1,0 +1,290 @@
+---
+title: "Lab4a - Data 606"
+author: "Ohannes (Hovig) Ohannessian"
+date: "3/17/2018"
+output: html_document
+---
+
+
+```{r load-data, eval=TRUE}
+library(knitr)
+load(url("http://www.openintro.org/stat/data/ames.RData"))
+```
+
+
+```{r assign, eval=TRUE}
+area <- ames$Gr.Liv.Area
+price <- ames$SalePrice
+```
+
+
+```{r area, eval=TRUE}
+summary(area)
+hist(area)
+```
+
+1.  Describe this population distribution.
+<div class="alert alert-warning">
+The population distribution is skewed to the right and the shape of the distribution is in between the `r min(area)` and `r max(area)`.
+</div>
+
+```{r samp1, eval=TRUE}
+samp1 <- sample(area, 50)
+```
+
+
+2.  Describe the distribution of this sample. How does it compare to the distribution of the population?
+<div class="alert alert-warning">
+This sample also is right skewed.
+</div>
+
+
+```{r mean-samp1, eval=TRUE}
+mean(samp1)
+```
+
+
+
+3.  Take a second sample, also of size 50, and call it `samp2`.  How does the 
+    mean of `samp2` compare with the mean of `samp1`?  Suppose we took two 
+    more samples, one of size 100 and one of size 1000. Which would you think 
+    would provide a more accurate estimate of the population mean?
+```{r}
+mu1<-mean(samp1)
+samp2<-sample(area,50)
+mu2<-mean(samp2)
+if(mu1<mu2){
+  printo<-paste("The mean of samp2 is greater than samp1")
+} else if(mu1>mu2){
+  printo<-paste("The mean of samp2 is less than samp1")
+} else {
+  printo<-paste("The mean of samp2 is equal to samp1")
+}
+```
+
+<div class="alert alert-warning">
+The mean of samp2 is `r mean(samp2)` vs. the mean of samp1 is `r mean(samp1)`. `r printo`.
+</div>
+
+
+```{r loop, eval=TRUE}
+sample_means50 <- rep(NA, 5000)
+
+for(i in 1:5000){
+   samp <- sample(area, 50)
+   sample_means50[i] <- mean(samp)
+   }
+
+hist(sample_means50)
+```
+
+
+```{r hist-breaks, eval=TRUE}
+hist(sample_means50, breaks = 25)
+```
+
+
+4.  How many elements are there in `sample_means50`?  Describe the sampling 
+    distribution, and be sure to specifically note its center.  Would you 
+    expect the distribution to change if we instead collected 50,000 sample 
+    means?
+<div class="alert alert-warning">
+\# of elements of `sample_means50`: `r length(sample_means50)` with a mean of: `r round(mean(sample_means50),2)`. The distribution looks normal.
+</div>
+
+```{r loop-long, eval=TRUE}
+sample_means50 <- rep(NA, 5000)
+
+samp <- sample(area, 50)
+sample_means50[1] <- mean(samp)
+
+samp <- sample(area, 50)
+sample_means50[2] <- mean(samp)
+
+samp <- sample(area, 50)
+sample_means50[3] <- mean(samp)
+
+samp <- sample(area, 50)
+sample_means50[4] <- mean(samp)
+```
+
+
+```{r eval=TRUE}
+sample_means50 <- rep(NA, 5000)
+
+for(i in 1:5000){
+   samp <- sample(area, 50)
+   sample_means50[i] <- mean(samp)
+   if(i==1){
+    print("from ")
+    print(i)
+    print(" to ")
+   }
+   if(i==5000)
+    print(i)
+   }
+```
+
+
+5.  To make sure you understand what you've done in this loop, try running a 
+    smaller version.  Initialize a vector of 100 zeros called 
+    `sample_means_small`.  Run a loop that takes a sample of size 50 from 
+    `area` and stores the sample mean in `sample_means_small`, but only 
+    iterate from 1 to 100.  Print the output to your screen (type 
+    `sample_means_small` into the console and press enter).  How many elements 
+    are there in this object called `sample_means_small`? What does each 
+    element represent?
+
+```{r loop-again, eval=TRUE}
+sample_means_small <- rep(NA, 100)
+
+for(i in 1:100){
+   samp <- sample(area, 50)
+   sample_means_small[i] <- mean(samp)
+   if(i==1){
+    print("from ")
+    print(i)
+    print(" to ")
+   }
+   if(i==100)
+    print(i)
+}
+```
+
+<div class="alert alert-warning">
+\# of elements of `sample_means_small`: `r length(sample_means_small)` with a mean of: `r round(mean(sample_means_small),2)`. Each element represents the mean of the sample of 50, rolled 100 times.
+</div>
+
+```{r hist, eval=TRUE}
+hist(sample_means50)
+```
+
+
+```{r samp-10-100, eval=TRUE}
+sample_means10 <- rep(NA, 5000)
+sample_means100 <- rep(NA, 5000)
+
+for(i in 1:5000){
+  samp <- sample(area, 10)
+  sample_means10[i] <- mean(samp)
+  samp <- sample(area, 100)
+  sample_means100[i] <- mean(samp)
+}
+```
+
+
+
+```{r plot-samps, eval=TRUE, tidy = FALSE}
+par(mfrow = c(3, 1))
+
+xlimits <- range(sample_means10)
+
+hist(sample_means10, breaks = 20, xlim = xlimits)
+hist(sample_means50, breaks = 20, xlim = xlimits)
+hist(sample_means100, breaks = 20, xlim = xlimits)
+```
+
+
+6.  When the sample size is larger, what happens to the center?  What about the spread?
+
+<div class="alert alert-warning">
+* larger the sample size is, the closer to the main population is
+* the sample mean gets closer to the population mean
+* the spread becomes shorter
+</div>
+
+* * *
+## On your own
+
+So far, we have only focused on estimating the mean living area in homes in 
+Ames.  Now you'll try to estimate the mean home price.
+
+-   Take a random sample of size 50 from `price`. Using this sample, what is 
+    your best point estimate of the population mean?
+
+```{r}
+sample_price50<-sample(price,50)
+mean_sample_price50<-mean(sample_price50)
+point_estimate_sample_price50<-format(sample_price50,scientific=FALSE)
+```
+
+<div class="alert alert-warning">
+* sample_price_of_50 = `r sample_price50`
+* with a mean of: mean_sample_price_of_50 = `r round(mean_sample_price50,2)` 
+* with a point estimate of: point_estimate_sample_price_of_50 = `r point_estimate_sample_price50`.
+</div>
+
+-   Since you have access to the population, simulate the sampling 
+    distribution for $\bar{x}_{price}$ by taking 5000 samples from the 
+    population of size 50 and computing 5000 sample means.  Store these means 
+    in a vector called `sample_means50`. Plot the data, then describe the 
+    shape of this sampling distribution. Based on this sampling distribution, 
+    what would you guess the mean home price of the population to be? Finally, 
+    calculate and report the population mean.
+
+```{r}
+sample_means50<-rep(NA, 5000)
+for(i in 1:5000){
+  samp<-sample(price, 50)
+  sample_means50[i]<-mean(samp)
+}
+hist(sample_means50, breaks=25)
+```
+
+<div class="alert alert-warning">
+* The mean of `sample_means50` is between 180000 and 181000. mean_sample_means50 = `r mean(sample_means50)`
+* The shape of `sample_means50` distribution is normal and at the `mean_sample_means50`
+* The point estimate is: point_estimate_sample_means50 = `r format(mean(sample_means50), scientific=FALSE)`
+</div>
+
+-   Change your sample size from 50 to 150, then compute the sampling 
+    distribution using the same method as above, and store these means in a 
+    new vector called `sample_means150`. Describe the shape of this sampling 
+    distribution, and compare it to the sampling distribution for a sample 
+    size of 50.  Based on this sampling distribution, what would you guess to 
+    be the mean sale price of homes in Ames?
+
+```{r}
+sample_means150<-rep(NA, 5000)
+for(i in 1:5000){
+  samp<-sample(price, 150)
+  sample_means150[i]<-mean(samp)
+}
+```
+
+<div class="alert alert-warning">
+* The mean of `sample_means150` is between 180000 and 181000. mean_sample_means150 = `r mean(sample_means150)`
+* The shape of `sample_means150` distribution is normal and at the `mean_sample_means150`
+* The point estimate is: point_estimate_sample_means150 = `r format(mean(sample_means150), scientific=FALSE)`
+* The comparison will show that larger the sample is, better will be the shape of the distribution
+</div>
+
+```{r}
+par(mfrow = c(1, 2))
+xlimits <- range(sample_means50)
+
+hist(sample_means50, breaks = 20, xlim = xlimits)
+hist(sample_means150, breaks = 20, xlim = xlimits)
+```
+
+-   Of the sampling distributions from 2 and 3, which has a smaller spread?  If
+    we're concerned with making estimates that are more often close to the 
+    true value, would we prefer a distribution with a large or small spread?
+```{r}
+xlimits50 <- range(sample_means50)
+range50diff <- xlimits50[2] - xlimits50[1]
+
+xlimits150 <- range(sample_means150)
+range150diff <- xlimits150[2] - xlimits150[1]
+```
+
+<div class="alert alert-warning">
+* The range of `sample_means50` is `r xlimits50`
+* The range of `sample_means150` is `r xlimits150`
+* range50diff = `r range50diff`
+* range150diff = `r range150diff`
+* the spread becomes shorter when the sample becomes larger: `range150diff` < `range50diff`
+</div>
+
+
+
