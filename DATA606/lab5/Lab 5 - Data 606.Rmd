@@ -1,0 +1,164 @@
+---
+title: "Lab 5 - Data 606"
+author: "Ohannes (Hovig) Ohannessian"
+date: "3/25/2018"
+output: html_document
+---
+
+## North Carolina births
+
+In 2004, the state of North Carolina released a large data set containing 
+information on births recorded in this state. This data set is useful to 
+researchers studying the relation between habits and practices of expectant 
+mothers and the birth of their children. We will work with a random sample of 
+observations from this data set.
+
+## Exploratory analysis
+
+
+```{r load-data, eval=TRUE}
+library(knitr)
+load(url("http://www.openintro.org/stat/data/nc.RData"))
+```
+
+
+1.  What are the cases in this data set? How many cases are there in our sample?
+
+```{r summary, eval=TRUE}
+summary(nc)
+```
+
+<div class="alert alert-success">
+The cases in this data set are the birth observations in North Carolina. There are `r nrow(nc)` cases.
+</div>
+
+2.  Make a side-by-side boxplot of `habit` and `weight`. What does the plot 
+highlight about the relationship between these two variables?
+
+```{r}
+boxplot(weight~habit,data=nc, main="Mother's Habit vs. Baby's Weight", ylab="Weight", xlab="Habit")
+```
+<div class="alert alert-success">
+The median birth weight of babies born to non-smoker mothers is slightly higher than that of babies born to smoker mothers.
+</div>
+
+```{r by-means, eval=TRUE}
+by(nc$weight, nc$habit, mean)
+```
+
+## Inference
+
+3.  Check if the conditions necessary for inference are satisfied. Note that 
+you will need to obtain sample sizes to check the conditions. You can compute 
+the group size using the same `by` command above but replacing `mean` with 
+`length`.
+
+```{r eval=TRUE}
+by(nc$weight, nc$habit, length)
+```
+
+<div class="alert alert-success">
+* <u>Conditions:</u><br>
+1- Random: assuming randomness is in place<br>
+2- Normal: sample sizes are large enough to be normal with central limit sampling distribution >30<br>
+3- Independent: births do not depend on one another 
+</div>
+
+4.  Write the hypotheses for testing if the average weights of babies born to 
+smoking and non-smoking mothers are different.
+
+<div class="alert alert-success">
+$H_0: \mu_{smoking} = \mu_{non-smoking}$<br>
+$H_A: \mu_{smoking} \ne \mu_{non-smoking}$
+</div>
+
+```{r inf-weight-habit-ht, eval=TRUE, tidy=FALSE}
+inference(y = nc$weight, x = nc$habit, est = "mean", type = "ht", null = 0, alternative = "twosided", method = "theoretical")
+```
+
+5.  Change the `type` argument to `"ci"` to construct and record a confidence 
+interval for the difference between the weights of babies born to smoking and 
+non-smoking mothers.
+
+<div class="alert alert-success">
+95% confidence interval is 0.0534 to 0.5777
+</div>
+
+
+```{r}
+inference(y = nc$weight, x = nc$habit, est = "mean", type = "ci", null = 0, alternative = "twosided", method = "theoretical")
+```
+
+
+```{r inf-weight-habit-ci, eval=TRUE, tidy=FALSE}
+inference(y = nc$weight, x = nc$habit, est = "mean", type = "ci", null = 0, alternative = "twosided", method = "theoretical", order = c("smoker","nonsmoker"))
+```
+
+* * *
+
+## On your own
+
+-   Calculate a 95% confidence interval for the average length of pregnancies 
+(`weeks`) and interpret it in context. Note that since you're doing inference 
+on a single population parameter, there is no explanatory variable, so you can 
+omit the `x` variable from the function.
+
+```{r}
+inference(y = nc$weeks,est = "mean",conflevel = 95,type = "ci",alternative = "twosided",method = "theoretical")
+```
+
+<div class="alert alert-success">
+95 % Confidence interval = ( 38.1528 , 38.5165 )
+</div>
+
+-   Calculate a new confidence interval for the same parameter at the 90% 
+confidence level. You can change the confidence level by adding a new argument 
+to the function: `conflevel = 0.90`.
+
+```{r}
+inference(y = nc$weeks,est = "mean",conflevel = 90,type = "ci",alternative = "twosided",method = "theoretical")
+```
+
+<div class="alert alert-success">
+90 % Confidence interval = ( 38.182 , 38.4873 )
+</div>
+
+-   Conduct a hypothesis test evaluating whether the average weight gained by 
+younger mothers is different than the average weight gained by mature mothers.
+
+```{r}
+inference(y=nc$weight, x=nc$mature, type="ht", est="mean", null=0, method="theoretical", alternative="twosided")
+```
+
+<div class="alert alert-success">
+In the mean of the birth weight between younger and mature mothers:
+There's no difference: $H_0: \mu_{younger} = \mu_{mature}$<br>
+There's a difference: $H_A: \mu_{younger} \ne \mu_{mature}$
+
+* p-value =  0.8526 > 0.05 => failed to reject $H_0$, therefore there's a similar birth weight between younger and mature mothers
+</div>
+
+-   Now, a non-inference task: Determine the age cutoff for younger and mature 
+mothers. Use a method of your choice, and explain how your method works.
+
+<div class="alert alert-success">
+* the age cutoff for younger mothers <= `r max(nc[nc$mature == "younger mom",]$mage)`
+* the age cutoff for mature mothers > `r min(nc[nc$mature == "mature mom",]$mage)`
+</div>
+
+-   Pick a pair of numerical and categorical variables and come up with a 
+research question evaluating the relationship between these variables. 
+Formulate the question in a way that it can be answered using a hypothesis test
+and/or a confidence interval. Answer your question using the `inference` 
+function, report the statistical results, and also provide an explanation in 
+plain language.
+
+```{r}
+inference(y=nc$visits, x=nc$marital, type="ht", est="mean", null=0, method="theoretical", alternative="twosided")
+```
+
+<div class="alert alert-success">
+$H_0: \mu_{married_visits} = \mu_{non_married_visits}$<br>
+$H_A: \mu_{married_visits} \ne \mu_{non_married_visits}$<br>
+* p-value =  0 < 0.05 => fail to reject $H_A$, there's a difference in the average of doctor's visits between married and non-married mothers.
+</div>
