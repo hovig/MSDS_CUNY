@@ -1,0 +1,339 @@
+---
+title: "Homework 5 - Data 606"
+author: "Ohannes (Hovig) Ohannessian"
+date: "3/25/2018"
+output: html_document
+---
+
+## {.tabset .tabset-fade}
+
+### 5.6
+
+##### 5.6 Working backwards, Part II. A 90% confidence interval for a population mean is (65,77).  The population distribution is approximately normal and the population standard deviation is  unknown.   This  confidence  interval  is  based  on  a  simple  random  sample  of  25  observations. Calculate the sample mean, the margin of error, and the sample standard deviation.
+<hr>
+<u>Given:</u> 
+90% confidence interval (65,77) has a rate: z = 1.65
+
+* => low = 65
+* => up = 77
+
+n = 25, 
+df = n - 1
+
+margin_of_error = (up-low)/2 = standard_error   *   t*
+
+```{r}
+low<-65
+up<-77
+n<-25
+sample_mean<-round((low+up)/2,2)
+a<-paste("The sample mean is:", sample_mean)
+
+margin_of_error<-round((up-low)/2,2)
+b<-paste("The margin of error is:", margin_of_error)
+
+df<-25-1
+ci<-0.9
+two_tailed_ci<-ci + (1-ci)/2
+t<-qt(two_tailed_ci,df)
+standard_error<-margin_of_error/t
+standard_deviation<-standard_error*sqrt(n)
+c<-paste("The standard deviation is:", round(standard_deviation,2))
+```
+<div class="alert alert-success">
+* `r a`<br>
+* `r b`<br>
+* `r c`<br>
+</div>
+
+
+
+### 5.14
+
+##### 5.14 SAT  scores. SAT  scores  of  students  at  an  Ivy  League  college  are  distributed  with  a standard deviation of 250 points.  Two statistics students, Raina and Luke, want to estimate the average SAT score of students at this college as part of a class project.  They want their margin of error to be no more than 25 points.
+##### (a)  Raina wants to use a 90% confidence interval.  How large a sample should she collect?
+##### (b)  Luke  wants  to  use  a  99%  confidence  interval.   Without  calculating  the  actual  sample  size, determine  whether  his  sample  should  be  larger  or  smaller  than  Raina’s,  and  explain  your reasoning.
+##### (c)  Calculate the minimum required sample size for Luke.
+<hr>
+<u>Given:</u> 
+sd = 250
+
+(margin_of_error = standard_error * t*) =< 25 
+
+(a) ci=0.9, with a rate: z = 1.65
+
+$ME = z \cdot SE = z \cdot \frac{sd}{sqrt(n)}$ => $n = (\frac{z \cdot sd}{ME})^2$
+
+```{r}
+sd<-250
+margin_of_error<-25
+z<-1.65
+n<-(sd * z/margin_of_error)^2
+a<-paste("The sample size is:", round(n,2))
+```
+<div class="alert alert-success">
+* `r a`
+</div>
+
+(b) ci=0.99, with a rate: z = 2.58
+
+<div class="alert alert-success">
+* $z_{Luke} > z_{Raina}$  =>  $n_{Luke} > n_{Raina}$
+</div>
+
+(c) ci=0.9, with a rate: z = 1.65
+
+$ME = z \cdot SE = z \cdot \frac{sd}{sqrt(n)}$ => $n = (\frac{z \cdot sd}{ME})^2$
+
+```{r}
+sd<-250
+margin_of_error<-25
+z<-2.58
+n<-(sd * z/margin_of_error)^2
+c<-paste("The sample size is:", round(n,2))
+```
+<div class="alert alert-success">
+* `r c`
+</div>
+
+
+
+### 5.20
+
+##### 5.20 High School and Beyond, Part I. The National Center of Education Statistics conducted a survey of high school seniors, collecting test data on reading, writing, and several other subjects. Here we examine a simple random sample of 200 students from this survey.  Side-by-side box plots of reading and writing scores as well as a histogram of the differences in scores are shown below.
+<img src="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/DATA606/Screen%20Shot%202018-03-25%20at%2010.15.20%20AM.png" width="350" height="250">
+
+##### (a)  Is there a clear difference in the average reading and writing scores?
+##### (b)  Are the reading and writing scores of each student independent of each other?
+##### (c)  Create hypotheses appropriate for the following research question: is there an evident difference in the average scores of students in the reading and writing exam?
+##### (d)  Check the conditions required to complete this test.
+##### (e)  The average observed difference in scores is ̄${\bar{x}_{read−write}}= −0.545$, and the standard deviation of the differences is 8.887 points.  Do these data provide convincing evidence of a difference between the average scores on the two exams?
+##### (f)  What type of error might we have made?  Explain what the error means in the context of the application.
+##### (g)  Based on the results of this hypothesis test,  would you expect a confidence interval for the average difference between the reading and writing scores to include 0? Explain your reasoning.
+<hr>
+<u>Given:</u> 
+n = 200
+
+(a) 
+
+<div class="alert alert-success">
+* There's no clear difference in the average reading and writing scores. From the image, the histogram is unimodal centered at 0 and the boxplots have similar medians.
+</div>
+
+
+(b) 
+
+<div class="alert alert-success">
+* The reading and writing scores of each student not independent of each other, because there's pairing of writing and reading that needs to be taken into consideration and there's students ability to score differently: high vs. low.
+</div>
+
+(c)
+
+<div class="alert alert-success">
+<u>In the average scores of students in the reading and writing exam:</u>
+
+* Null hypothesis with no difference: $H_0$ : $\mu_0 = 0$
+* Alternative Hypothesis with a difference: $H_A$ : $\mu_A \ne 0$
+</div>
+
+(d)
+
+<div class="alert alert-success">
+<u>Satisfied because of the sample:</u>
+
+* is n = 200, large and unimodal 
+* is independent, n = 200 > 30
+* is random
+</div>
+
+(e)
+${\bar{x}_{read−write}}= −0.545$,
+sd = 8.887
+```{r}
+n<-200
+sd<-8.887
+x<--0.545
+se<-sd/sqrt(n)
+t<-x/se
+df<-n-1
+p_value<-pt(t,df)
+```
+
+<div class="alert alert-success">
+* The test statistic is: `r t`
+* p_value = `r p_value` > 0.05, failed to reject $H_0$.
+* There's not enough evidence to support the difference on the scores of the two exams
+</div>
+
+(f)
+
+<div class="alert alert-success">
+* Failure to reject $H_0$ means that we ignored $H_A$
+* Type 1 error is for rejecting $H_0$ => $H_0$ is true
+* Our error is of type 2 error which is that we assumed that there's a difference which is not the case
+</div>
+
+(g)
+
+<div class="alert alert-success">
+* Yes. It will include 0 because we rejected the $H_0$ null hypothesis
+</div>
+
+### 5.32
+
+##### 5.32  Fuel efficiency of manual and automatic cars, Part I. Each year the US Environmental Protection Agency (EPA) releases fuel economy data on cars manufactured in that year Below are summary statistics on fuel efficiency (in miles/gallon) from random samples of cars with manual and automatic transmissions manufactured in 2012.  Do these data provide strong evidence of a difference between the average fuel efficiency of cars with manual and automatic transmissions in terms of their average city mileage?  Assume that conditions for inference are satisfied.
+<img src="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/DATA606/Screen%20Shot%202018-03-25%20at%2010.16.00%20AM.png" width="350" height="250">
+<hr>
+<u>Given:</u> 
+<table border = "1">
+<th>Automatic</th>
+<th>Manual</th>
+<tr>
+<td>$n_1=26$</td>
+<td>$n_2=26$</td>
+</tr>
+<tr>
+<td>$sd_1=3.58$</td>
+<td>$sd_2=4.51$</td>
+</tr>
+<tr>
+<td>$\mu_1=16.12$</td>
+<td>$\mu_2=19.85$</td>
+</tr>
+</table>
+
+```{r}
+n_1<-26
+n_2<-n_1
+sd_1<-3.58
+sd_2<-4.51
+mu_1<-16.12
+mu_2<-19.85
+se_1<-sqrt((sd_1)^2/n_1)
+se_2<-sqrt((sd_2)^2/n_2)
+t<-(mu_1 - mu_2) / sqrt((sd_1)^2/n_1 + (sd_2)^2/n_2)
+df<-min(n_1-1,n_2-1)
+p_value<-pt(t,df)
+```
+
+<div class="alert alert-success">
+* Null hypothesis with no difference: $H_0$ : $\mu_1 = \mu_2$
+* Alternative Hypothesis with a difference: $H_A$ : $\mu_1 \ne \mu_2$
+* <u>Conditions:</u><br>
+1- Random: the sample is random<br>
+2- Normal: n = 26 is small sample relatively to the total cars in the city => no central theorem used<br>
+3- Independent: n = 26 < 10% of total cars in the city
+* p_value = `r p_value` < 0.05 => reject $H_0$. Yes, there's a difference between the average fuel efficiency of cars with manual and automatic transmissions in terms of their average city mileage 
+</div>
+
+### 5.48
+
+##### 5.48 Work hours and education. The General Social Survey collects data on demographics, education, and work, among many other characteristics of US residents. Using ANOVA, we can consider educational attainment levels for all 1,172 respondents at once. Below are the distributions of hours worked by educational attainment and relevant summary statistics that will be helpful in carrying out this analysis.
+<img src="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/DATA606/Screen%20Shot%202018-03-25%20at%2010.17.02%20AM.png" width="350" height="250">
+
+##### (a)  Write hypotheses for evaluating whether the average number of hours worked varies across the five groups.
+##### (b)  Check conditions and describe any assumptions you must make to proceed with the test.
+##### (c)  Below is part of the output associated with this test.  Fill in the empty cells.
+<img src="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/DATA606/Screen%20Shot%202018-03-25%20at%2010.17.14%20AM.png" width="350" height="250">
+
+##### (d) What is the conclusion of the test?
+<hr>
+<u>Given:</u> 
+n = 1172
+<table border = "1">
+<th>Less than HS</th>
+<th>HS</th>
+<th>Jr Col</th>
+<th>Bachelor's</th>
+<th>Graduate</th>
+<th>Total</th>
+<tr>
+<td>$\mu_1=38.67$</td>
+<td>$\mu_2=39.6$</td>
+<td>$\mu_3=41.39$</td>
+<td>$\mu_4=42.55$</td>
+<td>$\mu_5=40.85$</td>
+<td>$\mu=40.45$</td>
+</tr>
+<tr>
+<td>$sd_1=15.81$</td>
+<td>$sd_2=14.97$</td>
+<td>$sd_3=18.1$</td>
+<td>$sd_4=13.62$</td>
+<td>$sd_5=15.51$</td>
+<td>$sd=15.17$</td>
+</tr>
+<tr>
+<td>$n_1=121$</td>
+<td>$n_2=546$</td>
+<td>$n_1=97$</td>
+<td>$n_2=253$</td>
+<td>$n_1=155$</td>
+<td>$n=1172$</td>
+</tr>
+</table>
+
+
+(a)
+
+<div class="alert alert-success">
+* Null hypothesis: $H_0$ : $\mu_1 = \mu_2 = \mu_3 = \mu_4 = \mu_5$
+* Alternative Hypothesis: $H_A$ : $\mu_1 \ne \mu_2 \ne \mu_3 \ne \mu_4 \ne \mu_5$
+
+* p_value = `r p_value` < 0.05 => reject $H_0$. Yes, there's a difference between the average fuel efficiency of cars with manual and automatic transmissions in terms of their average city mileage  
+</div>
+
+
+(b)
+
+<div class="alert alert-success">
+* <u>Conditions:</u><br>
+1- Random: assuming randomness is in place<br>
+2- Normal: large sample sizes given with normal central limit sampling distribution<br>
+3- Independent: assuming that different grous' values are independent by looking at the given table and boxplot
+</div>
+
+
+(c)
+
+```{r}
+mu<-c(38.67, 39.6, 41.39, 42.55, 40.85)
+sd<-c(15.81, 14.97, 18.1, 13.62, 15.51)
+n<-c(121, 546, 97, 253, 155)
+
+total_n<-1172
+df_groups<-length(mu) - 1
+df_errors<-total_n - length(mu)
+df<-df_groups + df_errors
+
+msg<-501.54
+ssg<-round(msg * df_groups,2)
+
+sse<-267382
+mse<-round(sse/df_errors,2)
+
+f_value<-round(msg/mse,2)
+```
+
+
+ANOVA     | Df          | Sum Sq                     | Mean Sq  | F value     | Pr(>F)   | 
+----------|-------------|----------------------------|----------|-------------|----------|
+degree    |`r df_groups`|`r ssg`                     | 501.54   |`r f_value`  |  0.0682  |
+Residuals |`r df_errors`|  267,382                   |`r mse`   |             |          |
+Total     |`r df`       |`r round(sum(ssg,267382),2)`|          |             |          |
+
+(d)
+
+<div class="alert alert-success">
+* Failed to reject $H_0$ because p_value = 0.0682 > 0.05
+</div>
+
+
+
+
+
+
+
+
+
+
