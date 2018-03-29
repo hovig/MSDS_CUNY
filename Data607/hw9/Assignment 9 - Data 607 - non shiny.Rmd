@@ -1,0 +1,54 @@
+---
+title: "Assignment 9 - Data 607"
+author: "Ohannes (Hovig) Ohannessian"
+date: "3/27/2018"
+output: html_document
+---
+
+<div class="alert alert-info">
+**Assignment – Web APIs**
+
+* The New York Times web site provides a rich set of APIs, as described here: [http://developer.nytimes.com/docs](http://developer.nytimes.com/docs)
+
+* You’ll need to start by signing up for an API key.
+
+* Your task is to choose one of the New York Times APIs, construct an interface in R to read in the JSON data, and transform it to an R dataframe.
+</div>
+
+```{r echo=FALSE, include=FALSE}
+library(httr)
+library(jsonlite)
+library(shiny)
+library(magrittr)
+library(dplyr)
+library(stringi)
+key<-"e731540bdc9f4fda937a82b151214cee"
+```
+
+```{r}
+response<-GET("https://api.nytimes.com/svc/archive/v1/2018/3.json", query = list(api_key = key, order = "by-title", offset = 20))
+response[2]
+```
+
+<div class="alert alert-info">* <u><b>Search in NYT Archive: </u></b></div>
+
+```{r}
+getArchive<-function(year, month, rows) {
+  stopifnot(!any(is.na(c(year, month))))
+  stopifnot(year >= 1851)
+  stopifnot(month >= 1 & month <= 12)
+  stopifnot(rows >= 1)
+
+  url<-sprintf("https://api.nytimes.com/svc/archive/v1/%d/%d.json?api-key=%s", year, month, key)
+  response_df<-fromJSON(url,flatten = TRUE)$response$docs
+  
+  resp = response_df %>%
+    select(Headline = headline.main) %>%
+    mutate(Headline = stri_trans_totitle(Headline))
+  
+  stopifnot(is.data.frame(resp))
+  head(resp, rows)
+}
+
+getArchive(2015, 4, 24)
+```
