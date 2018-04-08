@@ -1,0 +1,257 @@
+---
+title: "Homework 6 - Data 606"
+author: "Ohannes (Hovig) Ohannessian"
+date: "4/7/2018"
+output: html_document
+---
+
+## {.tabset .tabset-fade}
+
+### 6.6
+
+##### 6.6 2010 Healthcare Law. On June 28, 2012 the U.S. Supreme Court upheld the much debated 2010 healthcare law, declaring it constitutional. A Gallup poll released the day after this decision indicates that 46% of 1,012 Americans agree with this decision. At a 95% confidence level, this sample has a 3% margin of error. Based on this information, determine if the following statements are true or false, and explain your reasoning.39
+##### (a) We are 95% confident that between 43% and 49% of Americans in this sample support the decision of the U.S. Supreme Court on the 2010 healthcare law.
+##### (b) We are 95% confident that between 43% and 49% of Americans support the decision of the U.S. Supreme Court on the 2010 healthcare law.
+##### (c) If we considered many random samples of 1,012 Americans, and we calculated the sample proportions of those who support the decision of the U.S. Supreme Court, 95% of those sample proportions will be between 43% and 49%.
+##### (d) The margin of error at a 90% confidence level would be higher than 3%.
+<hr>
+<u>Given:</u> 
+
+p=0.46,
+n=1012,
+me=0.03
+
+(a) False, because given is 46% exactly for the sample and not in a range between 43% and 49% although 46% is the middle of this range
+(b) True. We are 95% confident that the proportion of supporters are in between 43% and 49%: $p-me < p < p+me$  <=> 46%-3% < 46% < 46%+3%  <=> 43% < 46% < 49%.
+(c) False. The 95% confidence is for the given sample proportions and not for the random sample proportions.
+(d) False. Decreasing the confidence level would make the confidence interval narrower, making the margin of error decrease too.
+
+
+
+### 6.12
+
+##### 6.12 Legalization of marijuana, Part I. The 2010 General Social Survey asked 1,259 US residents: “Do you think the use of marijuana should be made legal, or not?” 48% of the respondents said it should be made legal.44
+##### (a) Is 48% a sample statistic or a population parameter? Explain.
+##### (b) Construct a 95% confidence interval for the proportion of US residents who think marijuana should be made legal, and interpret it in the context of the data.
+##### (c) A critic points out that this 95% confidence interval is only accurate if the statistic follows a normal distribution, or if the normal model is a good approximation. Is this true for these data? Explain.
+##### (d) A news piece on this survey’s findings states, “Majority of Americans think marijuana should be legalized.” Based on your confidence interval, is this news piece’s statement justified?
+<hr>
+<u>Given:</u> 
+
+n=1259,
+p=0.48
+
+(a) statistic vs. paramater: statistic is a measurement for a sample and paramater is a measurement for a population. The 48% is for a given sample, then it's a sample statistic. 
+
+(b) 
+```{r}
+n<-1259
+p<-0.48
+confidence<-0.95
+se<-sqrt(p*(1-p)/n)
+z<-qt(confidence+((1-confidence)/2),n-1)
+me<-z*se
+low<-p-me
+up<-p+me
+```
+
+For the 95% confidence interval, it's between (`r low`, `r up`).
+
+(c) It is true because to have a normal model to be a good approximation, we need to validate:
+1- the # of successes: n*p >= 10, n*p = 1259*0.48 = `r round(604.32,2)`
+2- the # of the failures: n*(1-p) >= 10, n*(1-p) = 1259*(1-0.48) = `r round(654.68,2)`
+
+(d) No. Based on the confidence interval calculated above in this question, we can state that it's up to 50% and it doesn't represent the majority.
+
+
+
+
+### 6.20
+
+##### 6.20 Legalize Marijuana, Part II. As discussed in Exercise 6.12, the 2010 General Social Survey reported a sample where about 48% of US residents thought marijuana should be made legal. If we wanted to limit the margin of error of a 95% confidence interval to 2%, about how many Americans would we need to survey ?
+<hr>
+<u>Given:</u> 
+
+p=0.48,
+me=0.02,
+confidence=0.95 -> z=1.96
+
+Formula: $me = z*se = z*sqrt(p*(1-p)/n)$ => $n = z^2 * p * (1-p) / me^2$
+
+```{r}
+p<-0.48
+me<-0.02
+z<-1.96
+n<-z^2 * p * (1-p) / me^2
+```
+
+`r ceiling(n)` Americans are needed to survey.
+
+
+### 6.28
+
+##### 6.28 Sleep deprivation, CA vs. OR, Part I. According to a report on sleep deprivation by the Centers for Disease Control and Prevention, the proportion of California residents who reported insufficient rest or sleep during each of the preceding 30 days is 8.0%, while this proportion is 8.8% for Oregon residents. These data are based on simple random samples of 11,545 California and 4,691 Oregon residents. Calculate a 95% confidence interval for the difference between the proportions of Californians and Oregonians who are sleep deprived and interpret it in context of the data.53
+<hr>
+<u>Given:</u> 
+
+CA: $p_1=0.08$, $n_1=11545$,
+
+OR: $p_2=0.088$, $n_2=4691$,
+
+confidence=0.95 => z=1.96
+
+<u>Margin of Error Formula:</u> $ME = z * sqrt{(p_1*(1-p_1)/n_1)+(p_2*(1-p_2)/n_2)}$
+
+```{r}
+p1<-0.08
+n1<-11545
+p2<-0.088
+n2<-4691
+me<-z*sqrt((p1*(1-p1)/n1)+(p2*(1-p2)/n2))
+low<-(p1-p2)-me
+up<-(p1-p2)+me
+```
+
+For the 95% confidence interval for the difference between the proportions of Californians and Oregonians who are sleep deprived, it's between (`r round(low,4)`, `r round(up,4)`). 
+
+
+
+### 6.44
+
+##### 6.44 Barking deer. Microhabitat factors associated with forage and bed sites of barking deer in Hainan Island, China were examined from 2001 to 2002. In this region woods make up 4.8% of the land, cultivated grass plot makes up 14.7%, and deciduous forests makes up 39.6%. Of the 426 sites where the deer forage, 4 were categorized as woods, 16 as cultivated grassplot, and 61 as deciduous forests. The table below summarizes these data.62 
+
+<img src="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/DATA606/hw6/6.44.png" width="350" height="250">
+
+##### (a) Write the hypotheses for testing if barking deer prefer to forage in certain habitats over others.
+##### (b) What type of test can we use to answer this research question?
+##### (c) Check if the assumptions and conditions required for this test are satisfied.
+##### (d) Do these data provide convincing evidence that barking deer prefer to forage in certain habitats over others? Conduct an appropriate hypothesis test to answer this research question. 
+<hr>
+<u>Given:</u> 
+
+n=426
+
+$p_1=0.048$
+
+$p_2=0.147$
+
+$p_3=0.396$
+
+(a) The hypotheses for testing if barking deer prefer to forage in certain habitats over others:
+
+$H_0$ - the population proportions are equal to the mentioned proportions: <br>$p_1=0.048$, $p_2=0.147$, $p_3=0.396$ and $p_4=1-0.048-0.147-0.396=0.409$
+
+$H_1$ - the population proportions are not equal to the mentioned proportions: <br>at least one of the $p_i$ has a different value.
+
+(b) we can use the chi-square test, since we have cases that can be classified into several groups.
+
+(c)
+Independence: we assume that the plots are independent of each other
+Sample size / distribution: expected values are all at least 5 expected cases.
+
+(d) <u>Formulas:</u> 
+
+$E = n * p_i$,
+
+$chi^2 = (O - E)^2 / E$, where O = observed frequency and E = expected frequency
+
+```{r}
+n<-426
+p<-c(0.048, 0.147, 0.396, 0.409)
+observed<- c(4, 16, 61, 345)
+expected<- c(n*p[1], n*p[2], n*p[3], n*p[4])
+chi_square <- (observed - expected )^ 2 / expected
+chi<-sum(chi_square)
+p_value <- 1 - pchisq(chi, df = length(observed)-1)
+```
+
+p_value = `r p_value`.
+
+p_value < 0.001 & p_value < 0.05 => reject $H_0$.
+
+There's enough evidence to support the claim that barking deer forage in certain habitats over others.
+
+### 6.48
+
+
+##### 6.48 Coffee and Depression. Researchers conducted a study investigating the relationship between caffeinated coffee consumption and risk of depression in women. They collected data on 50,739 women free of depression symptoms at the start of the study in the year 1996, and these women were followed through 2006. The researchers used questionnaires to collect data on caffeinated coffee consumption, asked each individual about physician-diagnosed depression, and also asked about the use of antidepressants. The table below shows the distribution of incidences of depression by amount of caffeinated coffee consumption.63
+
+<img src="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/DATA606/hw6/6.48.png" width="350" height="250">
+
+
+##### (a) What type of test is appropriate for evaluating if there is an association between coffee intake and depression?
+##### (b) Write the hypotheses for the test you identified in part (a).
+##### (c) Calculate the overall proportion of women who do and do not suffer from depression.
+##### (d) Identify the expected count for the highlighted cell, and calculate the contribution of this cell to the test statistic, i.e. $(Observed − Expected)^ 2/Expected$.
+##### (e) The test statistic is χ2 = 20.93. What is the p-value?
+##### (f) What is the conclusion of the hypothesis test?
+##### (g) One of the authors of this study was quoted on the NYTimes as saying it was “too early to recommend that women load up on extra coffee” based on just this study.64 Do you agree with this statement? Explain your reasoning. 
+<hr>
+
+(a) Chi-square test is appropriate for evaluating if there is an association between coffee intake and depression (2-way table)
+
+(b) 
+
+$H_0$ - the variables (coffee intake and depression) are independent
+
+$H_1$ - the variables are not independent
+
+(c)
+```{r}
+total_depressed<-2607
+total_normal<-48132
+total<-total_depressed+total_normal
+depressed_women<-round(total_depressed/total * 100, 2)
+normal_women<-round(total_normal/total * 100, 2)
+```
+
+The overall proportion of women who do (depressed) and do not (normal) suffer from depression:
+
+depressed: `r depressed_women`%
+
+normal: `r normal_women`%
+
+(d) 
+```{r}
+n<-6617
+observed<-373
+expected<-n*total_depressed/total
+chi_square <- (observed - expected )^2 / expected
+```
+
+The expected count for the highlighted value is `r chi_square`
+
+(e)
+```{r}
+groups<-5
+df<-groups-1
+chi<-sum(chi_square)
+p_value <-pchisq(20.93, df = df,lower.tail = FALSE)
+```
+
+p_value = `r p_value`
+
+(f)
+Since the p_value < 0.001 & p_value < 0.05 => we reject $H_0$.
+There's enough evidence to support the claim that there is an association between coffee intake and depression.
+
+(g) I agree. The clinical depression examination needs to be specific with the exact effects of coffee intake and depression to take them into the account and which it might not be stated here in this study.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
