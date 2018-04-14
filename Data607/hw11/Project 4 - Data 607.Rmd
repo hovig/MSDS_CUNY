@@ -1,0 +1,158 @@
+---
+title: "Project 4 - Data 607"
+author: "Ohannes (Hovig) Ohannessian"
+date: "4/13/2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r include=FALSE, cache=FALSE}
+library(knitr)
+library(tm)
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+<div class="alert alert-success">
+* Setting a local path on machine 
+* Downloading easy_ham and spam_2 corpuses 
+* Saving and untaring them for usage.
+</div>
+
+```{r}
+setwd("/Users/oohanne@us.ibm.com/Documents/CUNY/DATA607")
+local_path<-setwd("/Users/oohanne@us.ibm.com/Documents/CUNY/DATA607")
+
+download_untar<-function(file, destfile){
+  url <- paste("https://spamassassin.apache.org/old/publiccorpus/", file, sep="")
+  download.file(url, destfile=destfile)
+  untar(destfile)
+}
+
+download_untar("20050311_spam_2.tar.bz2", "spam_2.tar.gz")
+download_untar("20030228_easy_ham.tar.bz2", "easy_ham.tar.gz")
+```
+
+<div class="alert alert-success">
+<u>Functions:</u>
+
+* Cleaning and filtering the ham and spam datasets 
+* Building and processing term document matrix
+* Preparing the training and testing datasets
+* The filtering will be: 66% training and 34% testing
+</div>
+
+```{r}
+corpusfiles_cleaning_actions<-c(removePunctuation, stripWhitespace, tolower, removeNumbers)
+filter_files<-function(corpus_files){
+  for(i in corpusfiles_cleaning_actions){
+    data<-tm_map(corpus_files, i) 
+  }
+  return(data)
+}
+
+setTmd<-function(type, path){
+  dir<-sprintf("%s/%s", path, type)
+  corpus_files<-Corpus(DirSource(directory=dir))
+  cleaned_files <- filter_files(corpus_files)
+  tmd<-TermDocumentMatrix(cleaned_files)
+  tdm<-removeSparseTerms(tmd,0.7)
+}
+
+df_testing <- c()
+df_vector<-function(df_data, type, flag){
+  df_docs <- c(levels(df_data$Docs))
+  df_docs <- sample(df_docs)
+  df_training <- df_data %>% 
+                filter(Docs %in% df_docs[1:round(0.66*length(df_docs))]) 
+  df_testing <- df_data %>% 
+                filter(Docs %in% df_docs[((round(0.66*length(df_docs)))+1):length(df_docs)]) 
+  df_training <- df_training %>% 
+                select(Terms,Freq) %>% 
+                group_by(Terms) %>% 
+                summarise(Freq=sum(Freq)) %>% 
+                mutate(Type=type)
+  return(df_training)
+}
+```
+
+<div class="alert alert-success">
+* Training ham and spam datasets 
+* Add type column for both datasets
+* Combining them into one dataset
+* Replace NAs with 0s
+</div>
+
+```{r}
+ham <- setTmd("easy_ham", local_path)
+spam <- setTmd("spam_2", local_path)
+
+ham_data <- as.data.frame(as.table(ham))
+spam_data <- as.data.frame(as.table(spam))
+
+ham_training<-df_vector(ham_data,"ham","training")
+ham_testing<-df_testing
+spam_training<-df_vector(spam_data,"spam","training")
+spam_testing<-df_testing
+ham_spam_combined_training<-rbind(ham_training, spam_training) 
+ham_spam_combined_training<-spread(ham_spam_combined_training, Type, Freq)
+ham_spam_combined_training[is.na(ham_spam_combined_training)] <- 0
+kable(head(ham_spam_combined_training))
+```
+
+<div class="alert alert-success">
+* Rating spamness and hamness in the training dataset
+* Plot the results
+</div>
+
+```{r}
+ham_spam_training <- ham_spam_combined_training %>% 
+                    mutate(hamness=ham/(ham+spam),
+                           spamness=spam/(ham+spam))
+
+kable(head(ham_spam_training))
+ggplot(ham_spam_training, aes(x=ham_spam_training$spamness, y=ham_spam_training$hamness)) + geom_point(data=ham_spam_training, aes(x=ham_spam_training$spamness, y=ham_spam_training$hamness)) 
+```
+
+<div class="alert alert-success">
+* Preparing for testing ham and spam datasets 
+* Add type column for both datasets
+* Combining them into one dataset
+* Replace NAs with 0s
+* Plot the results
+</div>
+
+```{r}
+ham_testing <- ham_data %>% 
+              mutate(Actual_Type="ham")
+spam_testing <- spam_data %>% 
+              mutate(Actual_Type="spam")
+
+ham_spam_testing <- rbind(ham_testing, spam_testing) 
+ham_spam_testing[is.na(ham_spam_testing)] <- 0
+
+kable(head(ham_spam_testing))
+ggplot(ham_spam_testing, aes(x=ham_spam_testing$Terms, y=ham_spam_testing$Freq)) + geom_point(data=ham_spam_testing, aes(x=ham_spam_testing$Terms, y=ham_spam_testing$Freq)) 
+```
+
+<div class="alert alert-success">
+* Merging training and testing datasets into one dataset
+* Sort them by Docs
+* Plot the results
+</div>
+
+```{r}
+ham_spam_merged <- merge(x=ham_spam_testing, y=ham_spam_training, by="Terms", all.x=T)
+ham_spam_merged <- ham_spam_merged %>% 
+                  arrange(Docs)  %>% 
+                  select(-ham,-spam) %>% 
+                  mutate(hamness_sum=Freq*hamness, spamness_sum=Freq*spamness)
+
+kable(head(ham_spam_merged))
+ggplot(ham_spam_merged, aes(x=ham_spam_testing, y=ham_spam_merged$spamness_sum)) + geom_point(data=ham_spam_merged, aes(x=ham_spam_merged$hamness_sum, y=ham_spam_merged$spamness_sum)) 
+```
+
+
+
