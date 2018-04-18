@@ -1,0 +1,90 @@
+---
+title: "Discussion 12 - Recommender Systems"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+---
+
+# Intro {.sidebar}
+
+What's on this dashboard?
+
+* The questions tab
+* The answers tab
+* Reference materials & links
+
+<br><b><i>By Ohannes (Hovig) Ohannessian</i></b>
+
+# Questions
+
+## Column 1
+
+### Recommender Systems
+
+<br><b>Your task is to analyze an existing recommender system that you find interesting.  You should:
+
+   1. Perform a Scenario Design analysis as described below.  Consider whether it makes sense for your selected recommender system to perform scenario design twice, once for the organization (e.g. Amazon.com) and once for the organization's customers.
+  
+   2. Attempt to reverse engineer what you can about the site, from the site interface and any available information that you can find on the Internet or elsewhere.
+  
+   3. Include specific recommendations about how to improve the site's recommendation capabilities going forward. 
+  
+   4. Create your report using an R Markdown file, and create a discussion thread with a link to the GitHub repo where your Markdown file notebook resides.  You are not expected to need to write code for this discussion assignment.</b>
+
+
+# Answers
+
+## Column 1
+
+### Facebook
+
+<u>Definition:</u><br> 
+Collaborative filtering (CF) is a recommender systems technique that helps people discover items that are most relevant to them.<br>
+
+
+#### <b><u>Perform a Scenario Design Analysis</u></b>
+**What are the target users?**<br>
+Facebook's average dataset for CF has: <br>
+- 100 billion ratings<br>
+- more than a billion users<br>
+- millions of items<br>
+
+**What are their key goals?**<br>
+Facebook uses historical item ratings of like-minded people to predict how someone would rate an item. This might include pages, groups, events, games, and more. CF is based on the idea that the best recommendations come from people who have similar tastes.<br>
+
+**How can you help them accomplish their goals?**<br>
+- By better matrix factorization or by parent/child tree implementation<br>
+- By better item mapping and iterations<br>
+- By smart partitioning and provisioning to reduce huge amount of network traffic<br>
+
+#### <b><u>Reverse Engineer</u></b><br>
+
+  <i>Item recommendation computation:</i>
+
+  In order to get the actual recommendations for all users, we need to find items with highest predicted ratings for each user. When dealing with the huge data sets,       checking the dot product for each (user, item) pair becomes unfeasible, even if we distribute the problem to more workers. We needed a faster way to find the top K       recommendations for each user, or a good approximation of it.
+  
+  One possible solution is to use a ball tree data structure to hold item vectors. A ball tree is a binary tree where leafs contain some subset of item vectors, and each   inner node defines a ball that surrounds all vectors within its subtree.
+
+
+#### <b><u>Specific recommendations for improvements</u></b><br>
+
+  - Incorporating the social graph and user connections for providing a better set of recommendations
+  - Starting from the previous models instead of random initialization, for recurrent learning
+  - Automatic parameter fitting with cross-validation for optimizing the different metrics for a given data set
+  - Trying out better partitioning and skipping machines that don't need certain item data during rotations
+
+# References
+
+## Column 1 {data-width=300}
+
+### Links
+
+[Recommending items to more than a billion people](https://code.facebook.com/posts/861999383875667/recommending-items-to-more-than-a-billion-people/)
+
+***
+
+[Ball Tree](https://en.wikipedia.org/wiki/Ball_tree)
+
+***
+
+[Rmd on Github]()
