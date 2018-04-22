@@ -1,0 +1,182 @@
+---
+title: "Homework 7 - Data 606"
+author: "Ohannes (Hovig) Ohannessian"
+date: "4/20/2018"
+output: html_document
+---
+
+
+## {.tabset .tabset-fade}
+
+### 7.24
+
+##### 7.24  Nutrition at Starbucks, Part I. The scatterplot below shows the relationship between the number of calories and amount of carbohydrates (in grams) Starbucks food menu items contain. Since Starbucks only lists the number of calories on the display items, we are interested in predicting the amount of carbs a menu item has based on its calorie content.
+
+<img src="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/DATA606/hw7/hw7-7.24.png" width="350" height="250">
+
+##### (a)  Describe the relationship between number of calories and amount of carbohydrates (in grams) that Starbucks food menu items contain.
+##### (b)  In this scenario, what are the explanatory and response variables?
+##### (c)  Why might we want to fit a regression line to these data?
+##### (d)  Do these data meet the conditions required for fitting a least squares line?
+<hr>
+
+(a) Relationship between number of calories and amount of carbohydrates:
+
+* linear: no strong curvature
+* positive: slope upwards
+* weak: spread points
+
+(b) 
+* explanatory variable: calories
+* response variable: carbohydrates
+
+(c) we might want to fit a regression line to these data that we can predict the amount of carbohydrates 
+
+(d) conditions for the least squares line:
+
+* linearity: yes linear
+* nearly normal residuals: yes the histogram looks symmetric and unimodel 
+* constant variability: no, it's not constant. in the histogram, the residuals look higher on the right than the left side
+* independent observations: yes assuming the data related to the food items are independent
+
+No, these data do not meet the conditions required for fitting a least squares line
+
+### 7.26
+
+##### 7.26  Body  measurements,  Part  III. Exercise  7.15  introduces  data  on  shoulder  girth  and height of a group of individuals.  The mean shoulder girth is 107.20 cm with a standard deviation of 10.37 cm.  The mean height is 171.14 cm with a standard deviation of 9.41 cm.  The correlation between height and shoulder girth is 0.67. 
+##### (a)  Write the equation of the regression line for predicting height.
+##### (b)  Interpret the slope and the intercept in this context.
+##### (c)  Calculate $R^2$ of the regression line for predicting height from shoulder girth, and interpret it in the context of the application.
+##### (d)  A randomly selected student from your class has a shoulder girth of 100 cm.  Predict the height of this student using the model.
+##### (e)  The student from part (d) is 160 cm tall.  Calculate the residual, and explain what this residual means.
+##### (f)  A one year old has a shoulder girth of 56 cm.  Would it be appropriate to use this linear model to predict the height of this child?
+<hr>
+<u>Given:</u> 
+
+$mean_{shoulder} = 107.2$<br>
+$sd_{shoulder} = 10.37$<br>
+$mean_{height} = 171.14$<br>
+$sd_{height} = 9.41$<br>
+$R = 0.67$<br>
+
+(a) the equation of the regression line for predicting height is: $y = {\beta}_0 + {\beta}_1 * x$
+
+```{r}
+mean_shoulder<-107.2
+sd_shoulder<-10.37
+mean_height<-171.14
+sd_height<-9.41
+R<-0.67
+
+# find b0 and b1
+b1<-R*(sd_height/sd_shoulder)
+b0<-mean_height-(b1*mean_shoulder)
+```
+
+y = `r b0` + `r b1`*x
+
+(b) slope = ${\beta}_1$ = `r b1`, for x=0: intercept = `r b0` 
+
+(c) $R^2$ = `r R*R` = `r R*R*100` %. `r R*R*100` % is the proportion os the straight line relationship between the girth and height
+
+(d) x = 100. predicted_height = `r b0` + `r b1`*x = `r b0 + b1*100`
+
+(e) y = 160. 
+The residual is: $e_i$ = observed - predicted = y - predicted_height = `r 160 - (b0 + b1*100)`.
+This means that the height was overestimated by `r abs(160 - (b0 + b1*100))`
+
+(f) 1_year_old_shoulder_girth = 56.
+Based on the scatterplot, the range of the shoulder girth is: 80 < shoulder_girth < 140. 1_year_old_shoulder_girth is outside this range. This leads to say that it's not appropriate to use this linear model to predict the height of this child.
+
+
+### 7.30
+
+##### 7.30   Cats, Part I. The following regression output is for predicting the heart weight (in g) of cats from their body weight (in kg).  The coefficients are estimated using a dataset of 144 domestic cats.
+
+<img src="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/DATA606/hw7/hw7-7.30a.png" width="350" height="250">
+
+<img src="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/DATA606/hw7/hw7-7.30b.png" width="350" height="250">
+
+ 
+##### (a)  Write out the linear model.
+##### (b)  Interpret the intercept.
+##### (c)  Interpret the slope.
+##### (d)  Interpret $R^2$.
+##### (e)  Calculate the correlation coefficient.
+<hr>
+
+
+(a)  Formula: $y = {\beta}_0 + {\beta}_1 * x$
+
+From the pic, we can conclude that ${\beta}_0 = (estimate, intercept) = -0.357$ and ${\beta}_1 = (estimate, body wt) = 4.034$
+
+y = -0.357 + 4.034 * x
+
+(b) The intercept is ${\beta}_0$ = -0.357. This means that for a body weight 0 kg the heart weight is -0.357 grams.
+
+(c) The slope is ${\beta}_1$ = 4.034. This means that in average of 4.034 grams the heart weight increases per body weight kilogram.
+
+(d) Given $R^2$ = 64.66% = 0.6466.This means the proportion in the heart weight relative to the straight line between the body weight and heart weight.
+
+(e) r = correlation coefficient = `r sqrt(0.6466)`
+
+
+### 7.40
+
+##### 7.40  Rate my professor. Many college courses conclude by giving students the opportunity to evaluate the course and the instructor anonymously.  However, the use of these student evaluations as an indicator of course quality and teaching effectiveness is often criticized because these measures may reflect the influence of non-teaching related characteristics, such as the physical appearance of the instructor.  Researchers at University of Texas, Austin collected data on teaching evaluation score (higher score means better) and standardized beauty score (a score of 0 means average,  negative  score  means  below  average,  and  a  positive  score  means  above  average)  for  a sample of 463 professors. The scatterplot below shows the relationship between these variables, and also provided is a regression output for predicting teaching evaluation score from beauty score.
+
+<img src="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/DATA606/hw7/hw7-7.40.png" width="450" height="350">
+
+##### (a)  Given that the average standardized beauty score is -0.0883 and average teaching evaluation score is 3.9983, calculate the slope.  Alternatively, the slope may be computed using just the information provided in the model summary table.
+##### (b)  Do these data provide convincing evidence that the slope of the relationship between teaching evaluation and beauty is positive?  Explain your reasoning.
+##### (c)  List the conditions required for linear regression and check if each one is satisfied for this model based on the following diagnostic plots.
+
+<img src="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/DATA606/hw7/hw7-7.40b.png" width="450" height="350">
+
+<hr>
+Formula: $y = {\beta}_0 + {\beta}_1 * x$
+
+(a) Given: x = -0.0883 and y = 3.9983.
+
+${\beta}_0 = (estimate, intercept) = 4.010$
+
+${\beta}_1$ = (y - ${\beta}_0$) / x = `r (3.9983 - 4.010)/-0.0883`
+
+(b) n = 463. Let's consider these hypotheses:
+
+$H_0$: ${\beta}_1$ = 0
+
+$H_1$: ${\beta}_1$ > 0
+
+Let's find the value of the test statistic: t = (${\beta}_1$ - 0) / std_error_beauty = `r ((3.9983 - 4.010)/-0.0883)/0.0322`. The p_value, with a df = n-2 = 463-2 = 461, is p_value < 0.005 which < 0.05 => then $H_0$ is rejected.
+
+With ${\beta}_1$ > 0, we conclude that the slope of the relationship between teaching evaluation and beauty is positive.
+
+(c) conditions for the linear regression:
+
+* linearity: yes linear, no strong curvature
+* nearly normal residuals: yes the histogram looks symmetric and unimodel 
+* constant variability: satisfied because in the histogram, the residual plot shows how the spread is same everywhere
+* independent observations: yes assuming the professores were randomly selected and are independent
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
