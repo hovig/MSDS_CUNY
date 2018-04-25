@@ -1,0 +1,93 @@
+---
+title: "Assignment 13 - Data 607"
+author: "Ohannes (Hovig) Ohannessian"
+date: "4/24/2018"
+output: html_document
+---
+
+For this assignment, you should take information from a relational database and migrate it to a NoSQL database of your own choosing. 
+
+For the relational database, you might use the flights database, the tb database, the "data skills" database your team created for Project 3, or another database of your own choosing or creation.
+
+For the NoSQL database, you may use MongoDB (which we introduced in week 7), Neo4j, or another NoSQL database of your choosing.
+
+Your migration process needs to be reproducible.  R code is encouraged, but not required.  You should also briefly describe the advantages and disadvantages of storing the data in a relational database vs. your NoSQL database.
+
+
+```{r setup, include=FALSE}
+library(RMySQL)
+library(DBI)
+library(mongolite)
+library(knitr)
+```
+
+<div class="alert alert-info">
+* Connect to flights database in MySQL and list its existing tables.
+</div>
+
+```{r}
+db <- dbConnect(MySQL(), user='root', host='localhost', dbname='flights')
+dbListTables(db)
+```
+
+<div class="alert alert-info">
+* Query the flights db
+* Load data into data frame and display part of its contents
+* Count all of its rows
+* Disconnect MySQL connection
+</div> 
+
+```{r}
+query <- "select * from flights;"
+
+flights.db <- dbGetQuery(conn=db, statement=query)
+kable(head(flights.db))
+nrow(flights.db)
+
+dbDisconnect(db) 
+```
+
+<div class="alert alert-info">
+* Prepare flights document in Mongodb
+* Insert to Mongodb
+* Find in MongoDB, load data into data frame and list part of its contents
+* Count all of its rows
+</div>
+
+```{r}
+mongo.collection <- mongo(collection = "flights")
+if (mongo.collection$count()>0)(mongo.collection$drop())
+mongo.collection$insert(flights.db)
+
+mongo.list <- mongo.collection$find() 
+kable(head(mongo.list))
+nrow(mongo.list)
+```
+
+<div class="alert alert-info">
+* SQL vs NoSQL: MySQL vs MongoDB
+</div>
+
+##### <u>MySQL: The SQL Relational Database</u>
+
+* Schema: Strict
+* Type: RDBMS
+* Structure: Table, row, column
+* Maturity: Established database - backed with a huge community - somehow stable.
+* Scalibility: Vertically scalable
+* Cost-effective: Open source and free.
+* Replicable: It can be replicated across multiple nodes, meaning that the workload can be reduced and the scalability and availability of the application can be increased.
+* Sharding: While sharding cannot be done on most SQL databases, it can be done on MySQL servers. This is both cost-effective and good for business.
+
+
+##### <u>MongoDB: The NoSQL - Non-Relational Database</u>
+
+* Schema: Dynamic
+* Type: Document-oriented
+* Structure: Collection, document, field
+* Scalability: Horizontally scalable reducing the workload and scaling business with ease.
+* Manageability: No database administrator needed.
+* Cost-effective: Open source and free.
+* Speed: High-performance for simple queries.
+* Flexibility: JSON based documents. New columns or fields can be added without affecting the existing rows or application performance in general.
+
