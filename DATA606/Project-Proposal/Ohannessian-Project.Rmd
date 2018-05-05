@@ -1,0 +1,129 @@
+---
+title: "DATA 606 - Final Project"
+author: "Ohannes (Hovig) Ohannessian"
+date: "4/26/2018"
+output: html_document
+---
+<hr>
+
+<div class="alert alert-success">
+## <b><u>City of Chicago - Locations of Array of Things Sensor Nodes</u></b><br>
+</div>
+
+### Part 1 - Introduction
+<div class="alert alert-info">
+The Array of Things (AoT) is an urban sensing project, a network of interactive, modular sensor boxes that will be installed around Chicago to collect real-time data on the city’s environment, infrastructure, and activity for research and public use. 
+
+A total of 500 nodes will be mounted around the city over the next two to three years. The first prototype nodes were installed in summer 2016, 2017 and more will be installed throughout 2018.
+
+The objectives of this final project are:
+
+* What's the status of plans for the AoT project? 
+* And where the installed sensors are located at?
+</div>
+
+### Part 2 - Data 
+
+```{r echo=FALSE, include=FALSE}
+library(tidyr)
+library(dplyr)
+library(knitr)
+library(rworldmap)
+library(ggplot2)
+library(ggmap)
+library(plotly)
+```
+
+
+<div class="alert alert-info">
+* Listing an overview of projects and plans that some went live and some are still planned and locating sensors on the map.
+* Replacing the following values in Status with: Live with True and Planned with False
+</div>
+
+```{r}
+array_of_things_locations_data<-read.csv("https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/DATA606/Project-Proposal/array-of-things-locations-1.csv")
+
+array_of_things_locations_data$Status<-as.character(array_of_things_locations_data$Status)
+array_of_things_locations_data$Status[array_of_things_locations_data$Status=="Live"]<-"True"
+t<-array_of_things_locations_data$Status[array_of_things_locations_data$Status=="True"]
+array_of_things_locations_data$Status[array_of_things_locations_data$Status=="Planned"]<-"False"
+f<-array_of_things_locations_data$Status[array_of_things_locations_data$Status=="False"]
+
+status_of_things<-array_of_things_locations_data %>% 
+                    group_by(Status) %>%
+                    summarise(count=n())
+
+dat <- data.frame(
+    status = factor(status_of_things$Status, levels=status_of_things$Status),
+    count = status_of_things$count
+)
+
+df<-round(data.frame(
+  x = jitter(array_of_things_locations_data$Longitude, amount = .3),
+  y = jitter(array_of_things_locations_data$Latitude, amount = .3)), 
+  digits = 2)
+```
+
+
+### Part 3 - Exploratory data analysis
+<div class="alert alert-info">
+* Each case represents a sensor. There are `r nrow(array_of_things_locations_data)` observations in the given data set.
+</div>
+
+```{r}
+glimpse(array_of_things_locations_data)
+```
+
+```{r}
+kable(status_of_things)
+```
+
+```{r}
+ggplot(data=dat, aes(x=status, y=count, fill=time)) + 
+    geom_bar(colour="black", fill="#DD8888", width=.8, stat="identity") + 
+    guides(fill=FALSE) +
+    xlab("Status type") + ylab("Status count per type") +
+    ggtitle("Chicago's planning status")
+```
+
+```{r echo=FALSE, include=FALSE}
+map<-get_googlemap('chicago', markers = df, path = df, scale = 2)
+```
+
+```{r}
+Longitude<-df$x
+Latitude<-df$y
+ggplot(df, aes(x=Longitude, y=Latitude)) + geom_point() + stat_smooth(method="lm", se=FALSE)
+```
+
+<div class="alert alert-info">
+* Feed same geolocation values into the linear regression model scatterplot  
+</div>
+
+```{r}
+plot(Longitude~Latitude, data=df)
+abline(lm(Longitude~Latitude, data=df))
+```
+
+```{r}
+ggmap(map, extent = 'device')
+```
+
+
+### Part 4 - Conclusion
+<div class="alert alert-info">
+> This is an observational study done to map 41 Nodes (devices) and to understand which ones went `Live` (`True` in this project) or which ones still stated as `Planned` (`False`). 
+
+> The response variable in this study is the `status` which is considered to be *categorical* and the explanatory variables are the `count` and the `geolocations` (`longitude`, `latitude`) which are considered to be *numerical*.
+
+> It is worth to still continue this study when the project is completed by the City of Chicago, then we can check the spread of the 500 Nodes and what data will they be streaming in.
+
+> Comparing the scatterplots above, the linear model and the non-linear model, we can conclude that the geolocation data need to be more accurate. We're not sure if this manually inserted to the datasets or if it was read from the nodes themselves. 
+</div>
+
+### References
+
+- <a href="https://arrayofthings.github.io" " target="_blank">Array of Things</a>
+- <a href="https://arrayofthings.github.io./node.html" " target="_blank">Current AoT Node Architecture</a>
+- <a href="https://data.cityofchicago.org/" " target="_blank">Chicago Data Portal</a>
+- <a href="https://data.cityofchicago.org/d/6rq2-yx28" " target="_blank">Array of Things Locations</a>
