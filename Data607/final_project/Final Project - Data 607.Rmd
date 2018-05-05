@@ -1,0 +1,202 @@
+---
+title: "Final Project - CUNY Data 607"
+author: "Ohannes (Hovig) Ohannessian"
+date: "4/19/2018"
+output: html_document
+---
+<hr>
+## <u>Hockey Teams' Points Based Ranking Predictions</u>
+
+Check project's: 
+
+* [Proposal](http://rpubs.com/hovig613/383339)
+* [Presentation](http://rpubs.com/hovig613)
+
+ 	
+```{r setup, include=FALSE}
+library(ggplot2) 
+library(knitr)
+library(psych) 
+```
+
+<br><div class="alert alert-info">
+* Load train & test datasets from final project Github repo into variables
+</div>
+
+```{r}
+train_url<-"https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/Data607/final_project/datasets/final_project_train.csv"
+train<-read.csv(train_url)
+
+test_url<-"https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/Data607/final_project/datasets/final_project_test.csv"
+test<-read.csv(test_url)
+```
+
+### <u>Train</u>
+
+<div class="alert alert-info">
+* Train dataset: display content information
+</div>
+
+```{r}
+str(train)
+```
+
+<br><div class="alert alert-info">
+* Train dataset: column titles
+</div>
+
+```{r}
+kable(data.frame(column_names=names(train)))
+```
+
+<br><div class="alert alert-info">
+* Train dataset: scale, correlate and plot
+</div>
+
+```{r}
+train_scale<-scale(train[, -1:-2])
+correlation<-cor(train_scale)
+cor.plot(correlation)
+```
+
+<br><div class="alert alert-info">
+* Apply principal component analysis on train scaled dataset without rotation 
+* Plot this analysis
+</div>
+
+```{r}
+pca_rotate_not<-principal(train_scale, rotate="none")
+plot(pca_rotate_not$values, type="b", ylab="Eigenvalues", xlab="Component")
+```
+
+<br><div class="alert alert-info">
+* Apply Principal component analysis on train scaled dataset with rotation 
+* Put it in data frame
+* Display parts of the score data frame
+</div>
+
+```{r}
+pca_rotate<-principal(train_scale, nfactors = 5, rotate = "varimax")
+pca_rotate
+
+pca_scores<-data.frame(pca_rotate$scores)
+head(pca_scores)
+```
+
+<br><div class="alert alert-info">
+* Insert points per game values into scores data frame 
+* Apply linear modeling on it `lm()`
+* Display summaries of these linear model metrics
+* Plot the predicted values with the original ones
+</div>
+
+```{r}
+pca_scores$ppg<-train$ppg
+
+linear_model_all<-lm(ppg~., data = pca_scores)
+summary(linear_model_all)
+
+linear_model_rc1_rc2<-lm(ppg~RC1+RC2, data = pca_scores)
+summary(linear_model_rc1_rc2)
+```
+
+<br><div class="alert alert-info">
+* scatterplot
+</div>
+
+```{r}
+plot(linear_model_rc1_rc2$fitted.values, train$ppg, main="Predicted vs. Original", xlab="Predicted",ylab="Original")
+
+train$predicted<-round(linear_model_rc1_rc2$fitted.values, digits = 2)
+
+ggplot(train, aes(x = predicted, y = ppg, label = Team)) + 
+  geom_point() + 
+  geom_text(size=3.5, hjust=0.1, vjust=-0.5, angle=0) + 
+  xlim(0.8, 1.4) + ylim(0.8, 1.5) +
+  stat_smooth(method="lm", se=FALSE)
+
+pca_scores$Team<-train$Team
+
+ggplot(pca_scores, aes(x = RC1, y = RC2, label = Team)) + 
+  geom_point() +
+  geom_text(size = 2.75, hjust = .2, vjust = -0.75, angle = 0) +
+  xlim(-2.5, 2.5) + ylim(-3.0, 2.5)
+```
+
+<br><div class="alert alert-info">
+* Root Means Squared Error (RMSE): calculate error by finding the mean of residuals (from linear model) and square root that value
+</div>
+
+```{r}
+sqrt(mean(linear_model_rc1_rc2$residuals^2))
+```
+
+<div class="alert alert-info">
+* train_rmse = `r sqrt(mean(linear_model_rc1_rc2$residuals^2))` 
+</div>
+<hr>
+
+### <u>Test</u>
+
+<div class="alert alert-info">
+* Apply `predict()` function to scale the test data
+* Insert and predict the rotated and test data values into data frame 
+* Insert to Test predicted scores the predicted values of linear model of Train, rotated and Test datasets
+* Plot the Test predicted values with the points per game
+</div>
+
+```{r}
+test_scores<-data.frame(predict(pca_rotate, test[, c(-1:-2)]))
+test_scores$predicted<-predict(linear_model_rc1_rc2, test_scores)
+
+test_scores$ppg<-test$ppg
+test_scores$Team<-test$Team
+
+ggplot(test_scores, aes(x = predicted, y = ppg, label = Team)) + 
+  geom_point() + 
+  geom_text(size=3.5, hjust=0.4, vjust = -0.9, angle = 35) + 
+  xlim(0.75, 1.5) + ylim(0.5, 1.6) +
+  stat_smooth(method="lm", se=FALSE)
+```
+
+<br><div class="alert alert-info">
+* Root Means Squared Error (RMSE): find the mean of residuals by subtracting predicted values from ppg in Test scores data frame and square root that value
+</div>
+
+```{r}
+residuals<-test_scores$ppg - test_scores$predicted
+sqrt(mean(residuals^2))
+```
+
+<div class="alert alert-info">
+* test_rmse = `r sqrt(mean(residuals^2))` 
+</div>
+
+### <u>Summary</u>
+<div class="alert alert-info">
+> In this project, 
+
+> * we examined and applied the Process component analysis to unsupervised learning. 
+> * We reduced the dimensions to understand the dataset in a supervised learning and 
+> * we used the linear regression analysis to make prediction of each team's total points per game.
+> * We used visualization to plot the data and the pricipal components.
+> * With more training needed to better the prediction and reduce error but `test_rmse > train_rmse` validates our model.
+```markdown
+Our points per game modeling shows the team rankings of:
+  - Colorado Avalanche as the worst  
+  - Washington Capitals as the best
+```
+</div>
+
+### <u>Useful Links</u>
+
+* <a href="http://www.nhl.com/stats" " target="_blank">NHL Statistics</a>
+* <a href="https://www.hockey-reference.com/" " target="_blank">Hockey Reference</a>
+* <a href="http://www.opensourcesports.com/hockey/" " target="_blank">Open Source Sports - Hockey</a>
+* <a href="https://en.wikipedia.org/wiki/Principal_component_analysis" " target="_blank">Principal component analysis</a>
+* <a href="https://raw.githubusercontent.com/hovig/MSDS_CUNY/master/Data607/final_project/" " target="_blank">Final Project on Github</a><br>
+
+
+
+
+
