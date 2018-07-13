@@ -1,2 +1,2 @@
-For the Final Project, we will be using tweets about cloud from Twitter and apply network analysis to examine relationships on tweeted topic in a public domain and their respective users. 
-This will be accomplished primarily using nltk, networkx, and matplotlib. 
+For the Final Project, we will be using tweets about cloud from Twitter and apply network analysis to examine relationships 
+on tweeted topic in a public domain and their respective users. This will be accomplished primarily using nltk, networkx, and matplotlib. 
