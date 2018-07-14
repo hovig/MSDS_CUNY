@@ -3,6 +3,6 @@
 1 Person team:
   - Ohannes (Hovig) Ohannessian
   
-For the Final Project, I will be using setting up a connection with Twitter's API and check followers of a user. I will be choosing my username and apply analysis around these followers.
+For the Final Project, I will be setting up a connection with Twitter's API and check followers of a user. I will be choosing my username and apply analysis around these followers.
 
 I will be extracting tweets about a topic (cloud companies) from Twitter and build an understanding with retweeted patterns sent by the user to apply network analysis and to examine relationships on that tweeted topic in a public domain. This will be accomplished primarily by using nltk, pandas, twitter, networkx and matplotlib libraries. 
