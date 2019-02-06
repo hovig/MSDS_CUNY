@@ -1,0 +1,46 @@
+.container {
+  margin: auto;
+  width: 400px;
+  padding: 20px;
+  text-align: center;
+}
+
+#header {
+  font-weight: bold;
+  padding-bottom: 20px;
+}
+
+#price {
+  font-weight: bold;
+}
+/**/
+nav {
+  background-color: #333;
+  margin: 0;
+  overflow: hidden;
+}
+
+nav li > ul li{
+  display: block;
+  background: #fff;
+}
+
+nav li > ul li a {
+  color: #aaa;
+  background-color:#FF0;
+  display: block;
+  line-height: 2em;
+  padding: 0.5em 2em;
+  text-decoration: none;
+}
+
+/* Change the background color when mouse over items */
+nav li:hover {
+  background-color: #aaa;
+}
+
+/* display the submenu on mouse over main menu item*/
+nav li:hover > ul{
+  position: absolute;
+  display : block;
+}
