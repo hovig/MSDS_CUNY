@@ -1,0 +1,183 @@
+---
+title: "Data 624 - Homework 1"
+author: "Ohannes (Hovig) Ohannessian"
+date: "2/10/2019"
+output: html_document
+---
+<hr><hr>
+
+# Chapter 2 - Time series graphics
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Load_packages}
+library(fpp2)
+library(forecast)
+```
+
+1. Use the help menu to explore what the series gold, woolyrnq and gas represent. These are available in the forecast package.
+
+```{r warning=FALSE}
+str(gold)
+str(woolyrnq)
+str(gas)
+```
+
+a) Use autoplot() to plot each of these in separate plots.
+
+```{r warning=FALSE}
+autoplot(gold)
+autoplot(woolyrnq)
+autoplot(gas)
+writeLines("")
+```
+
+b) What is the frequency of each series? Hint: apply the frequency() function.
+
+```{r warning=FALSE}
+cat("Gold Frequency: ", frequency(gold))
+cat("Woolyrnq Frequency: ", frequency(woolyrnq))
+cat("Gas Frequency: ", frequency(gas))
+```
+
+c) Use which.max() to spot the outlier in the gold series. Which observation was it?
+
+```{r warning=FALSE}
+cat("When gold got maximum value? ", which.max(gold))
+cat("What was the gold's maximum value? ", gold[which.max(gold)])
+```
+
+<hr><hr>
+
+2. Download the file tute1.csv from OTexts.org/fpp2/extrafiles/tute1.csv, open it in Excel (or some other spreadsheet application), and review its contents. You should find four columns of information. Columns B through D each contain a quarterly series, labelled Sales, AdBudget and GDP. Sales contains the quarterly sales for a small company over the period 1981-2005. AdBudget is the advertising budget and GDP is the gross domestic product. All series have been adjusted for inflation.
+
+a) You can read the data into R with the following script:
+
+&nbsp;`tute1 <- read.csv("tute1.csv", header=TRUE)`
+
+&nbsp;`View(tute1)`
+
+```{r warning=FALSE}
+tute1 <- read.csv("tute1.csv", header=TRUE)
+View(tute1)
+```
+
+b) Convert the data to time series
+
+&nbsp;`mytimeseries <- ts(tute1[,-1], start=1981, frequency=4)`
+
+(The [,-1] removes the first column which contains the quarters as we don’t need them now.)
+
+```{r warning=FALSE}
+mytimeseries <- ts(tute1[,-1], start=1981, frequency=4)
+```
+
+c) Construct time series plots of each of the three series
+
+&nbsp;`autoplot(mytimeseries, facets=TRUE)`
+
+Check what happens when you don’t include facets=TRUE.
+
+```{r warning=FALSE}
+autoplot(mytimeseries, facets=TRUE)
+autoplot(mytimeseries)
+```
+
+<hr><hr>
+
+3. Download some monthly Australian retail data from OTexts.org/fpp2/extrafiles/retail.xlsx. These represent retail sales in various categories for different Australian states, and are stored in a MS-Excel file.
+
+a) You can read the data into R with the following script:
+
+&nbsp;`retaildata <- readxl::read_excel("retail.xlsx", skip=1)`
+
+The second argument (skip=1) is required because the Excel sheet has two header rows.
+
+```{r warning=FALSE}
+retaildata <- readxl::read_excel("retail.xlsx", skip=1)
+```
+
+b) Select one of the time series as follows (but replace the column name with your own chosen column):
+
+&nbsp;`myts <- ts(retaildata[,"A3349873A"], frequency=12, start=c(1982,4))`
+  
+```{r warning=FALSE}
+myts <- ts(retaildata[,"A3349873A"], frequency=12, start=c(1982,4))
+```
+
+c) Explore your chosen retail time series using the following functions:
+
+&nbsp;`autoplot(), ggseasonplot(), ggsubseriesplot(), gglagplot(), ggAcf()`
+
+Can you spot any seasonality, cyclicity and trend? What do you learn about the series?
+
+```{r warning=FALSE}
+autoplot(myts)
+ggseasonplot(myts)
+ggsubseriesplot(myts)
+gglagplot(myts, lags = 12)
+ggAcf(myts)
+cat("can see seasonality and trend of the data")
+```
+
+<hr><hr>
+6. Use the the following graphics functions: `autoplot, ggseasonplot, ggsubseriesplot, gglagplot, ggAcf` and explore features from the following time series: `hsales, usdeaths, bricksq, sunspotarea, gasoline`.
+* Can you spot any seasonality, cyclicity and trend?
+* What do you learn about the series?
+
+<hr> 
+* hsales
+```{r warning=FALSE}
+autoplot(hsales)
+ggseasonplot(hsales)
+ggsubseriesplot(hsales)
+gglagplot(hsales)
+ggAcf(hsales, lag.max = 400)
+cat("can spot seasonality and cyclicity. The cycle period is about 4 years(100 months)")
+```
+
+<hr> 
+* usdeaths
+```{r warning=FALSE}
+autoplot(usdeaths)
+ggseasonplot(usdeaths)
+ggsubseriesplot(usdeaths)
+gglagplot(usdeaths)
+ggAcf(usdeaths, lag.max = 60)
+cat("can spot seasonality")
+```
+
+<hr> 
+* bricksq
+```{r warning=FALSE}
+autoplot(bricksq)
+ggseasonplot(bricksq)
+ggsubseriesplot(bricksq)
+gglagplot(bricksq)
+ggAcf(bricksq, lag.max = 200)
+cat("can spot little seasonality and strong trend")
+```
+
+<hr> 
+* sunspotarea
+```{r warning=FALSE}
+autoplot(sunspotarea)
+# ggseasonplot(sunspotarea) 
+# ggsubseriesplot(sunspotarea)
+print("For ggseasonplot, not seasonal | can't draw it. For ggsubseriesplot, not seasonal | useless to draw it")
+gglagplot(sunspotarea)
+ggAcf(sunspotarea, lag.max = 50)
+cat("can spot strong cyclicity")
+```
+
+<hr> 
+* gasoline
+```{r warning=FALSE}
+autoplot(gasoline)
+ggseasonplot(gasoline)
+# ggsubseriesplot(gasoline)
+print("The number of weeks is 52 and it looked like it is too much for subseriesplot")
+gglagplot(gasoline)
+ggAcf(gasoline, lag.max = 1000)
+cat("can spot seasonality and trend")
+```
+
+
