@@ -1,0 +1,5 @@
+applications:
+- name: tree_census
+  random-route: true
+  memory: 1024M
+  health-check-type: process
