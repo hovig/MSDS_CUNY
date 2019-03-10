@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="jumbotron text-center">
+  <a href="/" class="btn btn-warning btn-lg">Return to Main Page</a>
+  <h2>Trees in {{ boro | safe}}</h2>
+  <center><img src="data:image/png;base64, {{ plot_data }}" style="width:900px;height:600px;" alt="Tree Health"></center>
+  <p>{{ soql_trees_1 | safe}}</p>
+  <a href="/" class="btn btn-warning btn-lg">Return to Main Page</a>
+</div>
+{% endblock %}

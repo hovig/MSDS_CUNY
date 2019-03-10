@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block body %}
+<center><h2>CUNY 608 Module 4 - New York City Tree Census</h2><hr></center><br>
+<div class="jumbotron text-center">
+  <p><strong>View in HTML<br></strong></p>
+  <form action="/borough" method="POST" >
+    <input type="text" name="borough" value="Type borough name">
+    <input type="submit" class="btn btn-warning btn-lg" value="Submit">
+  </form><br>
+</div>
+<div class="jumbotron text-center">
+  <p><strong>View in JSON format<br></strong></p>
+  <form>
+    <input type="text" name="name" value="Type borough name">
+    <input type="button" value="Submit" class="btn btn-warning btn-lg" onclick="processForm(this.form.elements); return False;">
+  </form>
+
+  <script>
+    function processForm(params) {
+      var borough = params.name.value;
+      window.location.href = "/borough/"+borough;
+    }
+  </script>
+</div>
+
+
+{% endblock %}
