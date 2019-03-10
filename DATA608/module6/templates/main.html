@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block body %}
+<center><h2>CUNY 608 Module 6</h2><hr></center><br>
+<div class="jumbotron text-center">
+  <p><strong>Reverse a word<br></strong></p>
+  <form>
+    <input type="text" name="word" value="Type a word">
+    <input type="button" value="Submit" class="btn btn-warning btn-lg" onclick="processWord(this.form.elements); return False;">
+  </form>
+
+  <script>
+    function processWord(params) {
+      var word = params.word.value;
+      window.location.href = "/word/"+word;
+    }
+  </script>
+</div>
+
+<div class="jumbotron text-center">
+  <p><strong>Multiples of an integer<br></strong></p>
+  <form>
+    <input type="text" name="num" value="Type a number">
+    <input type="button" value="Submit" class="btn btn-warning btn-lg" onclick="processNum(this.form.elements); return False;">
+  </form>
+
+  <script>
+    function processNum(params) {
+      var num = params.num.value;
+      window.location.href = "/multiples/"+num;
+    }
+  </script>
+</div>
+
+<div class="jumbotron text-center">
+  <p><strong>View Presidents' List in HTML<br></strong></p>
+  <a href="/list" class="btn btn-primary btn-lg">Click Here</a>
+</div>
+
+<div class="jumbotron text-center">
+  <p><strong>View President's Details<br></strong></p>
+  <form>
+    <input type="text" name="name" value="Type president's name">
+    <input type="button" value="Submit" class="btn btn-warning btn-lg" onclick="processName(this.form.elements); return False;">
+  </form>
+
+  <script>
+    function processName(params) {
+      var name = params.name.value;
+      window.location.href = "/name/"+name;
+    }
+  </script>
+</div>
+
+<div class="jumbotron text-center">
+  <p><strong>View Module 4.5's NYC Tree Health in JSON format<br></strong></p>
+  <form>
+    <input type="text" name="name" value="Type borough name">
+    <input type="button" value="Submit" class="btn btn-warning btn-lg" onclick="processForm(this.form.elements); return False;">
+  </form>
+
+  <script>
+    function processForm(params) {
+      var borough = params.name.value;
+      window.location.href = "/borough/"+borough;
+    }
+  </script>
+</div>
+{% endblock %}

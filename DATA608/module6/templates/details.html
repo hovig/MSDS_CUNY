@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block body %}
+<a href="/" class="btn btn-warning btn-lg">Return to Main Page</a>
+<div class="jumbotron text-center">
+  <h2>Trees in {{ borough | safe}}</h2>
+  <p>{{ data | safe}}</p>
+  <a href="/" class="btn btn-warning btn-lg">Return to Main Page</a>
+</div>
+{% endblock %}
