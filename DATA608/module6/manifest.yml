@@ -1,0 +1,5 @@
+applications:
+- name: presidents
+  random-route: true
+  memory: 1024M
+  health-check-type: process
